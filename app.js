@@ -5,35 +5,44 @@ const path = require('path')
 const mongoose = require('mongoose')
 const server = require("http").createServer(app);
 const cors = require("cors");
+const User = require('./models/User')
 const { log } = require('console')
 
+app.use(express.json({ extended: true }))
+app.use('/api/auth', require('./routes/auth.routes'))
+// app.use('/api/toCall', require('./jingle/create.channel'))
 const io = require("socket.io")(server, {
 	cors: {
 		origin: "*",
 		methods: [ "GET", "POST" ]
 	}
 });
-
 app.use(cors());
-
 const PORT = process.env.PORT || 5000;
-
 app.get('/', (req, res) => {
 	res.send('Running');
 });
 
 
 io.on("connection", (socket) => {
-	socket.emit('subscribeToTimer', (e) => {
-		console.log('client is subscribing to timer with interval ',e);
-	  });
-    console.log("hii")
-	socket.on('adminID', () => { socket.join("room1") });
-	socket.emit("me", socket.id);
-	console.log(socket.rooms);
+	let rooms = "рууум";
+	socket.on("createRoom",(message ,data) =>{ 	
+		socket.emit('room',socket.join(data));
+		rooms=data;
+		 socket.broadcast.emit('message', "приииветь");
+		log(message)
+		// log(socket.rooms.has("room1"))
+	});
+	//   socket.broadcast.emit('message', "приииветь");
+	socket.on("rooms", (callback) => {
+		log(rooms)
+    callback(rooms);
+	});
+
 	socket.on("disconnect", () => {
 		socket.broadcast.emit("callEnded")
 	});
+	
 	socket.on("callUser", ({ userToCall, signalData, from, name }) => {
 		io.to(userToCall).emit("callUser", { signal: signalData, from, name });
 	});
@@ -42,13 +51,13 @@ io.on("connection", (socket) => {
 		io.to(data.to).emit("callAccepted", data.signal)
 	});
 });
+//create.channel
+// app.use(express.json({ extended: true }))
 
-
-app.use(express.json({ extended: true }))
-
-app.use('/api/auth', require('./routes/auth.routes'))
+// app.use('/api/auth', require('./routes/auth.routes'))
 app.use('/api/link', require('./routes/link.routes'))
 app.use('/t', require('./routes/redirect.routes'))
+
 
 if (process.env.NODE_ENV === 'production') {
   app.use('/', express.static(path.join(__dirname, 'client', 'build')))

@@ -50,9 +50,6 @@ export const Header = () => {
      </Container>
    </Navbar> */}
    
-   
-   
-
 
  <nav className="navbar navbar-expand-md navbar-dark fixed-top navbarbg" >
   <div className="container-fluid">

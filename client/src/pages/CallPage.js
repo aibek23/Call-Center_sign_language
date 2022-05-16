@@ -1,9 +1,12 @@
 import React, {useState, useEffect, useRef, useContext} from "react";
+// import Sidebar from '../components/Sidebar'
+// import VideoPlayer from '../components/VideoPlayer'
+// import Notifications from '../components/Notifications'
 import Peer from 'simple-peer';
 import openSocket from 'socket.io-client';  
 
 
-const  socket = openSocket('http://localhost:5000');
+const  socket = openSocket('http://192.168.43.152:5000');
 
 
 export const CallPage = () => {
@@ -14,11 +17,59 @@ export const CallPage = () => {
     const [name, setName] = useState('');
     const [call, setCall] = useState({});
     const [idToCall, setIdToCall] = useState('');
-    const [me, setMe] = useState('');
-    // const [adminID, setAdminID] = useState('');
+      const [room, setRoom] = useState({});
+  const [message,setMessage] = useState(' ')
     const myVideo = useRef();
     const userVideo = useRef();
     const connectionRef = useRef();
+useEffect(() => {
+    if(data.userEmail=="aasanakunuulul@gmail.com"){
+      if (navigator.mediaDevices === undefined) {
+        navigator.mediaDevices = {};
+      }
+      
+      if (navigator.mediaDevices.getUserMedia === undefined) {
+        navigator.mediaDevices.getUserMedia = function (constraints) {
+      
+          var getUserMedia = (
+            navigator.getUserMedia ||
+            navigator.webkitGetUserMedia ||
+            navigator.mozGetUserMedia
+          );
+      
+          if (!getUserMedia) {
+            return Promise.reject(new Error('getUserMedia is not implemented in this browser'));
+          }
+      
+          return new Promise(function (resolve, reject) {
+            getUserMedia.call(navigator, constraints, resolve, reject);
+          });
+      
+        };
+      }
+      // navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((currentStream) => {
+      //     setStream(currentStream);
+      //     myVideo.current.srcObject = currentStream;
+      //   });
+      navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+      .then(function(stream) {
+        setStream(stream);
+        myVideo.current.srcObject = stream;
+      })
+      .catch(function(err) {
+          console.log("An error occurred: " + err);
+      });  
+      socket.emit('createRoom','room1', 'room1'); 
+            socket.on('rooms', (room)=>setRoom(room) )
+      socket.on("message", (message) => setMessage(message))
+
+      // socket.on('adminID', (id) => setAdminID(id));
+      socket.on('callUser', ({ from, name: callerName, signal }) => {
+        setCall({ isReceivingCall: true, from, name: callerName, signal });
+      }); 
+
+    }
+    }, []);
   const toColl = () => {
 
       if (navigator.mediaDevices === undefined) {
@@ -55,8 +106,29 @@ export const CallPage = () => {
       })
       .catch(function(err) {
           console.log("An error occurred: " + err);
-      });
-      socket.on('me', (id) => setMe(id));
+      });    
+      switch (data.userEmail) {
+        case "aasanakunuulul@gmaial.com":
+          socket.emit('createRoom','room1', 'room1');
+          break;
+        case "aibekasanakunuulussld@gmail.com":
+          socket.emit('createRoom','room2', 'room2');
+          break;
+        case "admin3@gmail":
+          socket.emit('createRoom', 'room3');
+          break;
+        case "admin4@gmail":
+          socket.emit('createRoom', 'room4');
+          break;
+        case "admin5@gmail":
+          socket.emit('createRoom', 'room5');
+          break;
+        default:
+          break;
+      };
+      socket.on('rooms', (room)=>setRoom(room) )
+      socket.on("message", (message) => setMessage(message))
+
       // socket.on('adminID', (id) => setAdminID(id));
       socket.on('callUser', ({ from, name: callerName, signal }) => {
         setCall({ isReceivingCall: true, from, name: callerName, signal });
@@ -106,11 +178,13 @@ export const CallPage = () => {
   
       window.location.reload();
     };
+    console.log(room);
+  console.log(message);
   
-    return(
+    return (
+
         <div className="container mt-3">
-          <button type="button" class="btn btn-danger" onClick={()=>toColl()}>позвонить</button>
-            <p>{me}</p>
+          <button type="button" className="btn btn-danger" onClick={()=>toColl()}>позвонить</button>
             {data.userEmail}
             <p>CallPage</p>
             {/* <VideoPlayer name = {name} callAccepted = {callAccepted} myVideo = {myVideo} userVideo = {userVideo} callEnded = {callEnded} stream = {stream} call = {call} />
@@ -139,7 +213,7 @@ export const CallPage = () => {
           <div>
             <h3>Account Info</h3>
             <input label="Name" value={name} onChange={(e) => setName(e.target.value)} />
-            <h3>{me}</h3>
+
             <h1>  ---------  </h1>
           </div>
           <div>
@@ -169,6 +243,7 @@ export const CallPage = () => {
                 {/* <Sidebar props={[me, callAccepted, name, setName, callEnded, leaveCall, callUser]} /> */}
 
                 {/* <Notifications props={[answerCall, call, callAccepted ]} /> */}
+      
 
         </div>
     )

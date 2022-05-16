@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
-// import { SocketContext } from '../context/Context';
+import React, { useState, useContext } from 'react';
+import { SocketContext } from '../context/Context';
 
-const Sidebar = (me, callAccepted, name, setName, callEnded, leaveCall, callUser, adminID) => {
-  // const { me, callAccepted, name, setName, callEnded, leaveCall, callUser, adminID } = useContext(SocketContext);
+const Sidebar = ({children}) => {
+  const { callAccepted, name, setName, callEnded, leaveCall, callUser, notificationss, room, message } = useContext(SocketContext);
   const [idToCall, setIdToCall] = useState('');
+  console.log(room);
+  console.log(message);
 
   return (
     <div>
@@ -12,8 +14,11 @@ const Sidebar = (me, callAccepted, name, setName, callEnded, leaveCall, callUser
           <div>
             <h3>Account Info</h3>
             <input label="Name" value={name} onChange={(e) => setName(e.target.value)} />
-            <h3>{me}</h3>
-            <h1>  ---------  </h1>
+            <button type='button' onClick={() => {notificationss()}}>room</button>
+          <h1>{room&&" "}</h1>
+            {/* {room.map(e => {
+              return<h1>{room[e]}</h1>
+            })} */}
           </div>
           <div>
             <h3>Make a call</h3>
@@ -30,6 +35,7 @@ const Sidebar = (me, callAccepted, name, setName, callEnded, leaveCall, callUser
           </div>
         </div>
       </form>
+        {children}
     </div>
   );
 };
