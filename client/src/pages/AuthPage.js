@@ -11,8 +11,9 @@ export const AuthPage = () => {
   const {loading, request, error, clearError} = useHttp()
   // const [errorMessage, useerrorMessage] = useState(" ")
   const [form, setForm] = useState({
-    email: '', password: ''
+    username: '',surname: '',email: '', password: ''
   })
+   const [checkbox, setcheckbox] = useState(true)
   const [tabPanes, setTabPanes] = useState({activebtn1:true,activebtn2:false});
 
   useEffect(() => {
@@ -34,7 +35,6 @@ export const AuthPage = () => {
 
   const changeHandler = event => {
     setForm({ ...form, [event.target.name]: event.target.value })
-    console.log(event.target.name);
   }
 
   const registerHandler = async () => {
@@ -57,7 +57,8 @@ export const AuthPage = () => {
     // console.log({...form});
     try {
       const data = await request('/api/auth/login', 'POST', {...form})
-      auth.login(data.token, data.userId , form.email)
+      console.log(data);
+      auth.login(data.token, data.userId , form.email, data.username, data.surname, checkbox)
     } catch (e) {}
   }
   const tabPane1 = () =>{
@@ -114,8 +115,8 @@ export const AuthPage = () => {
                     <div className={" form-check "+styles.main_checkbox_+" form-check"}>
                        {/* <input value="None" id="checkbox1" name="check" type="checkbox"/>
                        <label htmlFor="checkbox1"></label> */}
-                      <input className="form-check-input" style={{"marginLeft":"0px"}} type="checkbox"  id="flexCheckDefault" />
-                      <label className="form-check-label" htmlFor="flexCheckDefault"> запомнить меня
+                      <input className="form-check-input" style={{"marginLeft":"0px"}} type="checkbox" defaultChecked={checkbox}  onChange={()=>{setcheckbox(!checkbox)}}/>
+                      <label className="form-check-label" htmlFor="flexCheckChecked"> запомнить меня
                       </label>
                     </div>
                   </div>
@@ -137,9 +138,9 @@ export const AuthPage = () => {
                                     placeholder="ведите ваше имя"
                                     id="exampleInputEmail2"
                                     type="text"
-                                    name="name"
+                                    name="username"
                                     className={"form-control " + styles.form_control}
-                                    value={form.name}
+                                    value={form.username}
                                     onChange={changeHandler}
                                   />        
                   </div>
@@ -185,8 +186,8 @@ export const AuthPage = () => {
                     <div className={" form-check "+styles.main_checkbox_+" form-check"}>
                        {/* <input value="None" id="checkbox1" name="check" type="checkbox"/>
                        <label htmlFor="checkbox1"></label> */}
-                      <input className="form-check-input" style={{"marginLeft":"0px"}} type="checkbox"  id="flexCheckDefault" />
-                      <label className="form-check-label" htmlFor="flexCheckDefault"> запомнить меня
+                      <input className="form-check-input" style={{"marginLeft":"0px"}} type="checkbox"  id="flexCheckChecked" defaultChecked={checkbox} onChange={()=>{setcheckbox(!checkbox);}}   />
+                      <label className="form-check-label" htmlFor="flexCheckChecked"> запомнить меня
                       </label>
                     </div>
                   </div>

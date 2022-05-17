@@ -4,13 +4,12 @@ import React, {useState, useEffect, useRef, useContext} from "react";
 // import Notifications from '../components/Notifications'
 import Peer from 'simple-peer';
 import openSocket from 'socket.io-client';  
-import styles from '../css/CallPage.module.css'
 
 
 const  socket = openSocket('http://localhost:5000/');
 
 
-export const CallPage = () => {
+export const Call_OperatorsPage = () => {
   const data = JSON.parse(localStorage.getItem('userData'));
     const [callAccepted, setCallAccepted] = useState(false);
     const [callEnded, setCallEnded] = useState(false);
@@ -23,7 +22,7 @@ export const CallPage = () => {
     const myVideo = useRef();
     const userVideo = useRef();
     const connectionRef = useRef();
-  const toColl = () => {
+useEffect(() => {
 
       if (navigator.mediaDevices === undefined) {
         navigator.mediaDevices = {};
@@ -59,16 +58,18 @@ export const CallPage = () => {
       })
       .catch(function(err) {
           console.log("An error occurred: " + err);
-      });    
-      socket.on('rooms', (room)=>setRoom(room) )
+      });  
+      socket.emit('createRoom','room1', 'room1'); 
+            socket.on('rooms', (room)=>setRoom(room) )
       socket.on("message", (message) => setMessage(message))
 
       // socket.on('adminID', (id) => setAdminID(id));
       socket.on('callUser', ({ from, name: callerName, signal }) => {
         setCall({ isReceivingCall: true, from, name: callerName, signal });
-      });
-  }
+      }); 
+
     
+    }, []);
     const answerCall = () => {
       setCallAccepted(true);
       const peer = new Peer({ initiator: false, trickle: false, stream });
@@ -115,7 +116,9 @@ export const CallPage = () => {
   
     return (
 
-        <div className={styles.container}>
+        <div className="container mt-3">
+            {data.userEmail}
+            <p>CallPage</p>
             {/* <VideoPlayer name = {name} callAccepted = {callAccepted} myVideo = {myVideo} userVideo = {userVideo} callEnded = {callEnded} stream = {stream} call = {call} />
 
                 <Sidebar me = {me} callAccepted = {callAccepted} name = { name} setName = {setName} callEnded = {callEnded} leaveCall = {leaveCall} callUser = {callUser} />
@@ -123,27 +126,27 @@ export const CallPage = () => {
                 <Notifications answerCall = {answerCall} call={call} callAccepted={callAccepted} /> */}
                         {/* <VideoPlayer props ={[name, callAccepted, myVideo, userVideo, callEnded, stream, call ]} /> */}
                         <div className="row">
-                                <div className="row">
-        <h1>{data.username} {data.usersurname}</h1>
-        </div>
       {stream && (
-      <div className="col-12">
-        <video playsInline muted ref={myVideo} autoPlay style={{ width: '100%', height: '100%' }} />
+      <div className="col-6">
+        <h1>{name || 'Name'}</h1>
+        <video playsInline muted ref={myVideo} autoPlay style={{ width: '550px', height: '300px' }} />
       </div>
       )}
       {callAccepted && !callEnded && (
         <div className="col-6">
-          <h3>{call.name}</h3>
+          <h1>{call.name || 'Name'}</h1>
           <video playsInline ref={userVideo} autoPlay style={{ width: '550px', height: '300px' }} />
         </div>
       )}
     </div>
     <div>
-      {/* <form>
+      <form>
         <div>
           <div>
             <h3>Account Info</h3>
             <input label="Name" value={name} onChange={(e) => setName(e.target.value)} />
+
+            <h1>  ---------  </h1>
           </div>
           <div>
             <h3>Make a call</h3>
@@ -159,9 +162,8 @@ export const CallPage = () => {
             )}
           </div>
         </div>
-      </form> */}
+      </form>
     </div>
-    <button type="button" className={styles.callBtn+' btn-success'} onClick={()=>toColl()}>позвонить</button>
     {call.isReceivingCall && !callAccepted && (
         <div style={{ display: 'flex', justifyContent: 'space-around' }}>
           <h1>{call.name} is calling:</h1>
@@ -179,3 +181,24 @@ export const CallPage = () => {
     )
 
 }
+
+
+//    switch (data.userEmail) {
+//         case "aasanakunuulul@gmaial.com":
+//           socket.emit('createRoom','room1', 'room1');
+//           break;
+//         case "aibekasanakunuulussld@gmail.com":
+//           socket.emit('createRoom','room2', 'room2');
+//           break;
+//         case "admin3@gmail":
+//           socket.emit('createRoom', 'room3');
+//           break;
+//         case "admin4@gmail":
+//           socket.emit('createRoom', 'room4');
+//           break;
+//         case "admin5@gmail":
+//           socket.emit('createRoom', 'room5');
+//           break;
+//         default:
+//           break;
+//       };

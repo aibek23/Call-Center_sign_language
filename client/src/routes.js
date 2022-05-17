@@ -2,7 +2,7 @@ import React from 'react'
 import {Switch, Route, Redirect} from 'react-router-dom'
 import {HomePage} from './pages/HomePage'
 import {CallsPage} from './pages/CallsPage'
-import {AboutPage} from './pages/AboutPage'
+import {Call_OperatorsPage} from './pages/Call_OperatorsPage'
 import {AuthPage} from './pages/AuthPage'
 import {CallPage} from './pages/CallPage'
 
@@ -19,8 +19,8 @@ export const useRoutes = isAuthenticated => {
         <Route path="/CallPage" exact>
           <CallPage />
         </Route>
-        <Route path="/About">
-          <AboutPage />
+        <Route path="/Call_OperatorsPage">
+          <Call_OperatorsPage />
         </Route>
         <Redirect to="/HomePage" />
       </Switch>

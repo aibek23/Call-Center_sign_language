@@ -1,0 +1,13 @@
+.container{
+    width: 100%;
+    height: 100%;
+}
+.callBtn{
+    position: absolute;
+    right: 50%;
+    min-width: 144px;
+    min-height: 144px;
+    border-radius:80px;
+    background-image:url(../img/call_management.icon.png);
+    bottom: 30%;
+}
