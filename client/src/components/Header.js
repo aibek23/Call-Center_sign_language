@@ -4,6 +4,7 @@ import {Nav, Navbar, Offcanvas, Container, Form, FormControl, Button} from 'reac
 import {AuthContext} from '../context/AuthContext'
 
 export const Header = () => {
+    const data = JSON.parse(localStorage.getItem('userData'));
   const history = useHistory()
   const auth = useContext(AuthContext)
 
@@ -13,8 +14,13 @@ export const Header = () => {
     history.push('/')
   }
 
+// menuToggle.classList.remove('collapse')
+// navLinks.forEach((l) => {
+//     l.addEventListener('click', () => { menuToggle.classList.remove('show')  })
+// })
+
   return (
-    <div style={{"position":"relative","height":"50px"}}>
+    <div >
      {/* <Navbar bg="light" expand="md" classNameName="mb-3 navbar-dark" style={{ "backgroundColor": "#2f0b45"}}>
      <Container fluid>
        <Navbar.Brand  href="/HomePage">домашняя страница</Navbar.Brand>
@@ -51,7 +57,7 @@ export const Header = () => {
    </Navbar> */}
    
 
- <nav className="navbar navbar-expand-md navbar-dark fixed-top navbarbg" >
+ <nav className="navbar navbar-expand-md navbar-dark  navbarbg" >
   <div className="container-fluid">
 
     <a className="navbar-brand" href="#">Fixed navbar</a>

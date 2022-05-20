@@ -25,7 +25,6 @@ app.get('/', (req, res) => {
 
 
 io.on("connection", (socket) => {
-	let rooms = "рууум";
 	socket.on("createRoom",(message ,data) =>{ 	
 		socket.emit('room',socket.join(data));
 		rooms=data;
@@ -39,12 +38,14 @@ io.on("connection", (socket) => {
     callback(rooms);
 	});
 
+	// socket.emit("me", socket.id);
+
 	socket.on("disconnect", () => {
 		socket.broadcast.emit("callEnded")
 	});
 	
-	socket.on("callUser", ({ userToCall, signalData, from, name }) => {
-		io.to(userToCall).emit("callUser", { signal: signalData, from, name });
+	socket.on("callUser", ({ userToCall, signalData, from, name, surname,email, }) => {
+		io.to(userToCall).emit("callUser", { signal: signalData, from, name,surname,email, });
 	});
 
 	socket.on("answerCall", (data) => {

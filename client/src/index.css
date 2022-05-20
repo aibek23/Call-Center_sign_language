@@ -9,3 +9,17 @@ body{
 .navbar{
     background-color: rgb(47, 11, 69);
 }
+.Operators-row{
+    /* max-width: 1200px; */
+}
+.video{
+     border: solid 2px #2f0b45;
+     position: relative;
+     
+}
+.video video{
+    width: 100%;
+}
+.video-player-user{
+    background-image:url(./img/kisspng-avatar-user-medicine-surgery.jpg)
+}
