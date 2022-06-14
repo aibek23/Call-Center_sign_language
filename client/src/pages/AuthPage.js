@@ -69,7 +69,7 @@ export const AuthPage = () => {
   }
 
   return (<>
-  < Header />
+  < Header props={null} />
     <div >
       <ToastContainer
           position="top-right"

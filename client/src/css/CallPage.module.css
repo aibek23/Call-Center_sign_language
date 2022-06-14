@@ -21,8 +21,7 @@ overflow: hidden;
     background-image:url(../img/call_management.icon.png);
     background-clip: border-box;
     background-position: -2px -1px;
-    bottom:30%;
-    /* bottom: 50px; */
+    bottom: 50px;
 }
 
 .video{
@@ -34,14 +33,17 @@ overflow: hidden;
     width: 100%;
 }
 .video_player_operator{
+  background-color: white;
     background-image:url(../img/png-clipart-customer-service-call-centre.png.gif);
      background-clip: border-box;
      background-repeat: no-repeat;
      background-position: center;
-    background-size: 320px 320px;
+    background-size: 100px 100px;
 }
 .video_player_little{
+
   position: absolute;
+  border: none;
   bottom:30%;
   z-index: 15;
  width:200px;

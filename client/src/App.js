@@ -11,10 +11,8 @@ import "./index.css";
 
 function App() {
   const {token, login, logout, userId, ready, userEmail} = useAuth()
-
   const isAuthenticated = !!token
   const routes = useRoutes(isAuthenticated)
-
   if (!ready) {
     return <Loader />
   }
@@ -25,7 +23,6 @@ function App() {
     }}>
 
       <Router>
-        { isAuthenticated && <Header /> }
           {routes}
       </Router>
 
