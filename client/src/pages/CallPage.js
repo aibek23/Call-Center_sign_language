@@ -27,7 +27,11 @@ export const CallPage = () => {
     socket.emit('createRoom', email);
     socket.on('busy__room', (data) => { setBusy__room(data); console.log(data, "_____________busy________") });
     socket.on('update', data => console.log(data))
-    socket.on('connect_error', err => console.log(err))
+    socket.on('connect_error', err => {console.log(err)
+    setTimeout(() => {
+      // window.location.reload(); 
+    }, 3000);
+    })
     socket.on('disconnect', () => { window.location.reload(); })
     socket.on('connect_failed', err => console.log(err))
     socket.on('callEndeMessage', (e) => {
@@ -162,7 +166,7 @@ export const CallPage = () => {
           <button type="button" onClick={leaveCall}>
             Hang Up
           </button>
-        ) : (
+        ) : (online_room.length&&
           <button type="button" className={styles.callBtn} onClick={() => { toColl(); callUser(operatorId); setCallAccepted(true) }} disabled={busy__room ? "disabled" : ""} ></button>
         )}
       </div>

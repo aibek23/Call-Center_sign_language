@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Image } from "../img/kisspng-avatar-user-medicine-surgery.jpg";
-import { saveAs } from 'file-saver';
+import { HangUp } from "../img/Call_Ende.jpg";
+import styles from "../css/Call_OperatorsPage.module.css";
+// import { saveAs } from 'file-saver';
 import {toast, ToastContainer} from 'react-toastify'
 import Peer from 'simple-peer';
 import openSocket from 'socket.io-client';
@@ -18,8 +20,8 @@ export const Call_OperatorsPage = (props) => {
   const [callEnded, setCallEnded] = useState(false);
   const [stream, setStream] = useState();
   const [call, setCall] = useState({});
-  const [idToCall, setIdToCall] = useState('');
-  const [message, setMessage] = useState(' ')
+  // const [idToCall, setIdToCall] = useState('');
+  // const [message, setMessage] = useState(' ')
   const myVideo = useRef();
   const userVideo = useRef();
   const connectionRef = useRef();
@@ -72,6 +74,7 @@ export const Call_OperatorsPage = (props) => {
     // socket.on('callUser', ({ name: callerName, signal, surname, email }) => {
     //   setCall({ isReceivingCall: true, name: callerName, signal, surname: surname, email: email })
     // })
+    socket.emit('createRoom', email, room, operatorId)
     socket.on('callUser', ({ from, name: callerName, signal,surname, email }) => {
       setCall({ isReceivingCall: true, from, name: callerName, signal , surname: surname, email: email});
     });
@@ -96,9 +99,6 @@ export const Call_OperatorsPage = (props) => {
       console.log(err.message); // not authorized
       console.log(err.data); // { content: "Please retry later" }
     });
-    socket.emit('createRoom', email, room, operatorId)
-    
-
   }, [])
   useEffect(() => {
     ; (async () => {
@@ -216,7 +216,7 @@ export const Call_OperatorsPage = (props) => {
   };
   window.onerror = function(msg, url, lineNo, columnNo, error) {
     // ... обработка ошибки ...
-   if(msg=='Uncaught Error: Connection failed.'){
+   if(msg==='Uncaught Error: Connection failed.'){
     stopRecording();
     toast.error(`Connection failed`, {
       position: "top-right",
@@ -264,7 +264,6 @@ export const Call_OperatorsPage = (props) => {
             <h1>{name}</h1>
           </div>
         )}
-
         {callAccepted && !callEnded && (
           userVideo ?
             <div className="col-6 video">
@@ -279,8 +278,8 @@ export const Call_OperatorsPage = (props) => {
       </div>
       <div>
         <form>
-          <div>
-            <div>
+          <div className="text-cente">
+            {/* <div>
               <h3>Make a call</h3>
               <input label="ID to call" value={idToCall} onChange={(e) => setIdToCall(e.target.value)} />
               {callAccepted && !callEnded ? (
@@ -292,7 +291,15 @@ export const Call_OperatorsPage = (props) => {
                   Call
                 </button>
               )}
-            </div>
+            </div> */}
+
+            {callAccepted && !callEnded && (
+               <div className={styles.HangUp_div}>
+             <button type="button" className={styles.call_btn_h} onClick={leaveCall}>
+                  {/* Hang Up */}
+                </button>
+                </div>
+              ) }
           </div>
         </form>
       </div>
@@ -304,9 +311,6 @@ export const Call_OperatorsPage = (props) => {
           </button>
         </div>
       )}
-      <div>
-        <video playsInline ref={URLVIDEO} autoPlay className="video-player-user" />
-      </div>
       {/* <button onClick={onClick} >
         {!recording ? 'Start' : 'Stop'}
       </button> */}
