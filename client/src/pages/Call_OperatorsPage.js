@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from "react";
 import { Image } from "../img/kisspng-avatar-user-medicine-surgery.jpg";
 import { HangUp } from "../img/Call_Ende.jpg";
 import styles from "../css/Call_OperatorsPage.module.css";
-// import { saveAs } from 'file-saver';
 import {toast, ToastContainer} from 'react-toastify'
 import Peer from 'simple-peer';
 import openSocket from 'socket.io-client';
@@ -27,7 +26,7 @@ export const Call_OperatorsPage = (props) => {
   const connectionRef = useRef();
   const URLVIDEO = useRef();
 
-  const username = useRef(`User_${Date.now().toString().slice(-4)}`)
+  const username = useRef(`${name}_${surname}_${operatorId}_${Date.now().toString().slice(-4)}`)
   const socketRef = useRef(socket)
   const linkRef = useRef()
   const videoRef = useRef();

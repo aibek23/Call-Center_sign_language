@@ -24,7 +24,7 @@ const saveData = async (data, username) => {
 	const dirPath = `${videoPath}/${dirName}`
 
 	const fileName = `${Date.now()}-${username}.webm`
-	const tempFilePath = `${dirPath}/temp-${fileName}`
+	const tempFilePath = `${dirPath}/${fileName}`
 	const finalFilePath = `${dirPath}/${fileName}`
 
 	let fileHandle
@@ -56,11 +56,9 @@ const saveData = async (data, username) => {
 			])
 			.on('end', async () => {
 				await unlink(tempFilePath)
-				console.log(`*** File ${fileName} created`)
 			})
 			.save(finalFilePath, dirPath)
 	} catch (e) {
-		console.log('*** saveData', e)
 	}
 }
 
@@ -149,9 +147,7 @@ io.on("connection", (socket) => {
 				operators.splice(i, 1)
 			}
 		})
-	});
-	
-	// console.log(socket.rooms,operators);
+	});	// console.log(socket.rooms,operators);
 });
 //create.channel
 // app.use(express.json({ extended: true }))
