@@ -1,14 +1,20 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import { Image } from "../img/kisspng-avatar-user-medicine-surgery.jpg";
+import StopWatch from "../components/StopWatch";
 import { HangUp } from "../img/Call_Ende.jpg";
 import styles from "../css/Call_OperatorsPage.module.css";
 import {toast, ToastContainer} from 'react-toastify'
 import Peer from 'simple-peer';
 import openSocket from 'socket.io-client';
 import 'react-toastify/dist/ReactToastify.css'
-
-const socket = openSocket.connect('http://localhost:5000/', { reconnection: false })
+import { ContextProvider } from "../context/Context";
+import { useStopWatch } from "../hooks/StopWatch.hook";
+import Timer from "../components/Timer";
+import ControlButtons from "../components/ControlButtons";
+const socket = openSocket.connect('https://localhost:5000/', { reconnection: false })
 export const Call_OperatorsPage = (props) => {
+  const {isActive,isPaused,handleStart,handlePauseResume,time} = useContext(ContextProvider)
+  // const [handleStart,handlePauseResume,time] = useStopWatch()
   const room = 'room' + props.props.operator
   const data = JSON.parse(localStorage.getItem('userData'));
   const name = data.username
@@ -24,8 +30,6 @@ export const Call_OperatorsPage = (props) => {
   const myVideo = useRef();
   const userVideo = useRef();
   const connectionRef = useRef();
-  const URLVIDEO = useRef();
-
   const username = useRef(`${name}_${surname}_${operatorId}_${Date.now().toString().slice(-4)}`)
   const socketRef = useRef(socket)
   const linkRef = useRef()
@@ -254,6 +258,15 @@ export const Call_OperatorsPage = (props) => {
         draggable
         pauseOnHover
   />
+  <StopWatch/>
+  <Timer time={time} />
+  <ControlButtons 
+    active={isActive}
+    isPaused={isPaused}
+    handleStart={handleStart}
+    handlePauseResume={handlePauseResume}
+  />
+
       {data.userEmail}
       <p>CallPage</p>
       <div className="row Operators-row">

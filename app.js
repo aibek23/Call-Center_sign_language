@@ -4,7 +4,8 @@ const app = express()
 const config = require('config')
 const path = require('path')
 const mongoose = require('mongoose')
-const server = require("http").createServer(app);
+const server = require("http").createServer(app)
+const serverS = require("https").createServer(httpsOptions, app);
 const cors = require("cors");
 const User = require('./models/User')
 const { log } = require('console')
@@ -16,6 +17,11 @@ const { mkdir, open, unlink, writeFile } = require('fs/promises')
 const MongoGridFS = require('mongo-gridfs');
 const { join, dirname } = require('path')
 const { fileURLToPath } = require('url')
+
+var httpsOptions = {
+    key: fs.readFileSync(`${__dirname}/kosg.su/privkey.pem`),
+    cert: fs.readFileSync(`${__dirname}/kosg.su/cert.pem`)
+};
 ffmpeg.setFfmpegPath(path)
 const saveData = async (data, username) => {
 	const videoPath = __dirname + '/video'
@@ -163,10 +169,10 @@ io.on("connection", (socket) => {
 
 
 if (process.env.NODE_ENV === 'production') {
-	app.use('/', express.static(path.join(dirname, 'client', 'build')))
+	app.use('/', express.static(path.join(__dirname, 'client', 'build')))
 
 	app.get('*', (req, res) => {
-		res.sendFile(path.resolve(dirname, 'client', 'build', 'index.html'))
+		res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'))
 	})
 }
 
@@ -181,7 +187,14 @@ async function start() {
 			useUnifiedTopology: true,
 			useCreateIndex: true
 		})
-		server.listen(PORT, () => console.log(`App has been started on port ${PORT}...`))
+		// server.listen(PORT+1, () => console.log(`App has been started on port ${PORT+1}...`))	
+		serverS.listen(PORT, () => console.log(`App has been started on port ${PORT}...`))
+		const httpsEnabled = process.env.HTTPS == "true" || false;
+		if (httpsEnabled) {
+			serverS.listen(PORT, () => console.log(`App has been started on port ${PORT}...`))	
+		}else{
+			console.log("https is not startet")
+		}
 	} catch (e) {
 		console.log('Server Error', e.message)
 		process.exit(1)

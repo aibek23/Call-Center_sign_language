@@ -1,10 +1,15 @@
+
 import React, { createContext, useState,useContext, useEffect,useCallback } from 'react';
 import {useHttp} from '../hooks/http.hook'
 import {AuthContext} from '../context/AuthContext'
-const useStopWatch = () => {
+// import "./StopWatch.css";
+import Timer from "./Timer";
+import ControlButtons from "./ControlButtons";
+  
+function StopWatch(props) {
   const [isActive, setIsActive] = useState(false);
   const [isPaused, setIsPaused] = useState(true);
-  const [time, setTime] = useState(0);
+  const [time, setTime] = useState(1515);
   const {loading, request} = useHttp()
   const {token} = useContext(AuthContext)
   useEffect(() => {
@@ -30,20 +35,26 @@ const useStopWatch = () => {
   
   const handlePauseResume = useCallback(async () => {
     try {
-      console.log("ok");
-   await request('/api/time/seva', 'Post', {TIME: time}, {
+      const data = await request('/api/time/save', 'POST', {time:time}, {
         Authorization: `Bearer ${token}`
       })
-    } catch (e) {}
+      console.log(data,"ok");
+    } catch (e) {console.log(e);}
   }, [token, request])
 
 
   
-return (
-  handleStart,handlePauseResume(),time,isActive,isPaused
-);
-};
-
-export const ContextProvider = createContext({
-  handleStart:useStopWatch,
-})
+  return (
+    <div className="stop-watch">
+      <Timer time={time} />
+      <ControlButtons
+        active={isActive}
+        isPaused={isPaused}
+        handleStart={handleStart}
+        handlePauseResume={handlePauseResume}
+      />
+    </div>
+  );
+}
+  
+export default StopWatch;

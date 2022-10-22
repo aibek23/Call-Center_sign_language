@@ -7,7 +7,6 @@ import {AuthPage} from './pages/AuthPage'
 import {CallPage} from './pages/CallPage'
 import { Header } from './components/Header'
 
-
 export const useRoutes = (isAuthenticated) => {
   const [operator, setOperator] = useState(false);
   useEffect(()=>{
