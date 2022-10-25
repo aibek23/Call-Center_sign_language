@@ -9,7 +9,7 @@ const serverS = require("https").createServer(httpsOptions, app);
 const cors = require("cors");
 const User = require('./models/User')
 const { log } = require('console')
-
+var os = require("os");
 const ffmpeg = require('fluent-ffmpeg')
 const assert = require('assert');
 const fs = require('fs');
@@ -17,6 +17,7 @@ const { mkdir, open, unlink, writeFile } = require('fs/promises')
 const MongoGridFS = require('mongo-gridfs');
 const { join, dirname } = require('path')
 const { fileURLToPath } = require('url')
+const { hostname } = require('node:os')
 
 var httpsOptions = {
     key: fs.readFileSync(`${__dirname}/kosg.su/privkey.pem`),
@@ -77,15 +78,14 @@ if(process.env.NODE_ENV === 'production'){
 		res.sendFile(path.resolve(__dirname,'client','build','index.html'))
 	})
 }
-// app.use('/api/toCall', require('./jingle/create.channel'))
-const io = require("socket.io")(server, {
+const io = require("socket.io")(serverS, {
 	cors: {
 		origin: "*",
 		methods: ["GET", "POST"]
 	}
 });
 app.use(cors());
-const PORT = process.env.PORT || 5000;
+const PORT = 5000
 app.get('/', (req, res) => {
 	res.send('Running');
 });
@@ -175,11 +175,6 @@ if (process.env.NODE_ENV === 'production') {
 		res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'))
 	})
 }
-
-
-// const PORT = config.get('port') || 5000
-// server.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
-
 async function start() {
 	try {
 		await mongoose.connect(config.get('mongoUri'), {
@@ -187,14 +182,7 @@ async function start() {
 			useUnifiedTopology: true,
 			useCreateIndex: true
 		})
-		// server.listen(PORT+1, () => console.log(`App has been started on port ${PORT+1}...`))	
-		serverS.listen(PORT, () => console.log(`App has been started on port ${PORT}...`))
-		const httpsEnabled = process.env.HTTPS == "true" || false;
-		if (httpsEnabled) {
-			serverS.listen(PORT, () => console.log(`App has been started on port ${PORT}...`))	
-		}else{
-			console.log("https is not startet")
-		}
+		serverS.listen(PORT, () => console.log(`App has been started on port ${PORT}...`))	
 	} catch (e) {
 		console.log('Server Error', e.message)
 		process.exit(1)
