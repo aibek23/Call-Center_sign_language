@@ -11,7 +11,7 @@ export const CallPage = () => {
   const email = data.userEmail
   const winHeight = window.innerHeight;
   const winWidth = window.innerWidth;
-  const socket = openSocket('https://localhost:5000/');
+  const socket = openSocket('https://kosg.su:5000');
   const [callAccepted, setCallAccepted] = useState(false);
   const [callEnded, setCallEnded] = useState(false);
   const [stream, setStream] = useState();

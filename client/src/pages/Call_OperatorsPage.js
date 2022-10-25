@@ -11,7 +11,7 @@ import { ContextProvider } from "../context/Context";
 import { useStopWatch } from "../hooks/StopWatch.hook";
 import Timer from "../components/Timer";
 import ControlButtons from "../components/ControlButtons";
-const socket = openSocket.connect('https://localhost:5000/', { reconnection: false })
+const socket = openSocket.connect('https://kosg.su:5000', { reconnection: false })
 export const Call_OperatorsPage = (props) => {
   const {isActive,isPaused,handleStart,handlePauseResume,time} = useContext(ContextProvider)
   // const [handleStart,handlePauseResume,time] = useStopWatch()
@@ -258,14 +258,14 @@ export const Call_OperatorsPage = (props) => {
         draggable
         pauseOnHover
   />
-  <StopWatch/>
+  {/* <StopWatch/>
   <Timer time={time} />
   <ControlButtons 
     active={isActive}
     isPaused={isPaused}
     handleStart={handleStart}
     handlePauseResume={handlePauseResume}
-  />
+  /> */}
 
       {data.userEmail}
       <p>CallPage</p>
