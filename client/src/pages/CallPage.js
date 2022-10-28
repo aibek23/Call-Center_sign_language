@@ -11,7 +11,7 @@ export const CallPage = () => {
   const email = data.userEmail
   const winHeight = window.innerHeight;
   const winWidth = window.innerWidth;
-  const socket = openSocket('https://kosg.su:5000');
+  const socket = openSocket('http://localhost:5000');
   const [callAccepted, setCallAccepted] = useState(false);
   const [callEnded, setCallEnded] = useState(false);
   const [stream, setStream] = useState();
@@ -29,19 +29,17 @@ export const CallPage = () => {
     socket.on('update', data => console.log(data))
     socket.on('connect_error', err => {console.log(err)
     setTimeout(() => {
-      // window.location.reload(); 
+      window.location.reload(); 
     }, 3000);
     })
     socket.on('disconnect', () => { window.location.reload(); })
     socket.on('connect_failed', err => console.log(err))
-    socket.on('callEndeMessage', (e) => {
+    socket.on('callEndeMessage', () => {
       window.location.reload();
     })
     socket.on('callUser', ({ from, name: callerName, signal }) => {
       setCall({ isReceivingCall: true, from, name: callerName, signal });
     });
-    console.log(online_room.length);
-
     socket.on('online_room', (data) => {
       setOnline_room(data);
 
@@ -84,23 +82,61 @@ export const CallPage = () => {
       };
     }
     navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-      .then((currentStream) => {
-        setStream(currentStream);
-
-        myVideo.current.srcObject = currentStream;
+      .then((stream) => {
+        setStream(stream);
+        myVideo.current.srcObject = stream;
       })
       .catch(function (err) {
         console.log("An error occurred: " + err);
       });
   }
 
+  // const answerCall = () => {
+  //   setCallAccepted(true);
+  //   const peer = new Peer({ initiator: false, trickle: false, stream });
+  //   peer.on('signal', (data) => {
+  //     socket.emit('answerCall', { signal: data, to: call.from });
+  //   });
+  //   peer.on('stream', (stream) => {
+  //     userVideo.current.srcObject = stream;
+  //   });
+
+  //   peer.signal(call.signal);
+
+  //   connectionRef.current = peer;
+  // };
+
+  // const callUser = (id) => {
+  //   const peer = new Peer({ initiator: true, trickle: false, stream: stream });
+
+  //   peer.on('error', (err) => {console.log(err);})
+  //   peer.on('signal', (data) => {
+  //     console.log('log№3');
+  //     socket.emit('callUser', { userToCall: id, signalData: data, from: email, name:name, surname:surname});
+  //   });
+  //   peer.on('stream', (data) => {
+  //     console.log('log№4');
+  //     userVideo.current.srcObject = data;
+  //   });
+  //   socket.on('callAccepted', (signal) => {
+  //     console.log(signal);
+  //     setCallAccepted(true);
+  //     peer.signal(signal);
+  //   });
+
+  //   connectionRef.current = peer;
+  // };
   const answerCall = () => {
     setCallAccepted(true);
+
     const peer = new Peer({ initiator: false, trickle: false, stream });
+
     peer.on('signal', (data) => {
       socket.emit('answerCall', { signal: data, to: call.from });
     });
+
     peer.on('stream', (currentStream) => {
+      console.log('stream');
       userVideo.current.srcObject = currentStream;
     });
 
@@ -113,15 +149,17 @@ export const CallPage = () => {
     const peer = new Peer({ initiator: true, trickle: false, stream });
 
     peer.on('signal', (data) => {
-      socket.emit('callUser', { userToCall: id, signalData: data, from: id, name, surname, email });
+      socket.emit('callUser', { userToCall: id, signalData: data, from: email, name });
     });
 
     peer.on('stream', (currentStream) => {
+      console.log('sream1111');
       userVideo.current.srcObject = currentStream;
     });
 
     socket.on('callAccepted', (signal) => {
       setCallAccepted(true);
+
       peer.signal(signal);
     });
 
@@ -150,7 +188,7 @@ export const CallPage = () => {
           <h1>{data.username} {data.usersurname}</h1>
         </div>
         <div className={styles.video + " " + `${tabPanes.screen1 && styles.video_player_little}`} onClick={() => { tabPane1() }}>
-          <video playsInline muted ref={myVideo} autoPlay className={styles.video_player_user} />
+          <video playsInline ref={myVideo} muted autoPlay className={styles.video_player_user} />
         </div>
         {callAccepted && !callEnded && (
           <div className={styles.video + " " + `${tabPanes.screen2 && styles.video_player_little}`} onClick={() => { tabPane2() }}>
@@ -159,7 +197,7 @@ export const CallPage = () => {
           </div>
         )}
       </div>
-      <div>
+      <div> 
       </div>
       <div className={styles.wraper_callBtn}>
         {callAccepted && !callEnded ? (
@@ -167,17 +205,17 @@ export const CallPage = () => {
             Hang Up
           </button>
         ) : (online_room.length&&
-          <button type="button" className={styles.callBtn} onClick={() => { toColl(); callUser(operatorId); setCallAccepted(true) }} disabled={busy__room ? "disabled" : ""} ></button>
+          <button type="button" className={styles.callBtn} onClick={() => { toColl(); callUser(operatorId); setCallAccepted(true) }}  ></button>
         )}
       </div>
-      {call.isReceivingCall && !callAccepted && (
+      {/* {call.isReceivingCall && !callAccepted && (
         <div style={{ display: 'flex', justifyContent: 'space-around' }}>
           <h1>{call.name} is calling:</h1>
           <button type="submit" onClick={answerCall}>
             Answer
           </button>
         </div>
-      )}
+      )} */}
       {/* <Sidebar props={[me, callAccepted, name, setName, callEnded, leaveCall, callUser]} /> */}
 
       {/* <Notifications props={[answerCall, call, callAccepted ]} /> */}

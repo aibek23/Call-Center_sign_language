@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
-import { Image } from "../img/kisspng-avatar-user-medicine-surgery.jpg";
-import StopWatch from "../components/StopWatch";
-import { HangUp } from "../img/Call_Ende.jpg";
+// import { Image } from "../img/kisspng-avatar-user-medicine-surgery.jpg";
+// import StopWatch from "../components/StopWatch";
+// import { HangUp } from "../img/Call_Ende.jpg";
 import styles from "../css/Call_OperatorsPage.module.css";
 import {toast, ToastContainer} from 'react-toastify'
 import Peer from 'simple-peer';
@@ -11,38 +11,52 @@ import { ContextProvider } from "../context/Context";
 import { useStopWatch } from "../hooks/StopWatch.hook";
 import Timer from "../components/Timer";
 import ControlButtons from "../components/ControlButtons";
-const socket = openSocket.connect('https://kosg.su:5000', { reconnection: false })
+const socket = openSocket.connect('http://kosg.su', { reconnection: false })
 export const Call_OperatorsPage = (props) => {
   const {isActive,isPaused,handleStart,handlePauseResume,time} = useContext(ContextProvider)
   // const [handleStart,handlePauseResume,time] = useStopWatch()
-  const room = 'room' + props.props.operator
+  
   const data = JSON.parse(localStorage.getItem('userData'));
   const name = data.username
   const surname = data.usersurname
   const email = data.userEmail
-  const operatorId = data.userId
+
+  const winHeight = window.innerHeight;
   const [callAccepted, setCallAccepted] = useState(false);
   const [callEnded, setCallEnded] = useState(false);
   const [stream, setStream] = useState();
   const [call, setCall] = useState({});
-  // const [idToCall, setIdToCall] = useState('');
+  const [idToCall, setIdToCall] = useState('');
   // const [message, setMessage] = useState(' ')
+
+
+  const [online_room, setOnline_room] = useState([]);
+  const [busy__room, setBusy__room] = useState(true);
+  const [operatorId, setOperatorId] = useState()
+  const [tabPanes, setTabPanes] = useState({ screen1: true, screen2: false });
+
   const myVideo = useRef();
   const userVideo = useRef();
   const connectionRef = useRef();
-  const username = useRef(`${name}_${surname}_${operatorId}_${Date.now().toString().slice(-4)}`)
+  
   const socketRef = useRef(socket)
-  const linkRef = useRef()
-  const videoRef = useRef();
+
   const [screenStream, setScreenStream] = useState()
   const [voiceStream, setVoiceStream] = useState()
   const [recording, setRecording] = useState(false)
   const [loading, setLoading] = useState(true)
   let mediaRecorder = null
   let dataChunks = []
+  let room
+  let operatorId_mongo = data.userId
+  const username = useRef(`${name}_${surname}_${operatorId_mongo}_${Date.now().toString().slice(-4)}`)
 
   useEffect(() => {
-    socketRef.current.emit('user:connect', username.current)
+    if(props.props){
+      console.log('ок');
+
+      room = 'room' + props.props.operator;
+      socketRef.current.emit('user:connect', username.current)
     if (navigator.mediaDevices === undefined) {
       navigator.mediaDevices = {};
     }
@@ -63,9 +77,23 @@ export const Call_OperatorsPage = (props) => {
       };
     }
     navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-      .then((currentStream) => {
-        setStream(currentStream);
-        myVideo.current.srcObject = currentStream;
+      .then((streams) => {
+        setStream(streams);
+        myVideo.current.srcObject = streams;
+      })
+      .catch(function (err) {
+        console.log("An error occurred: " + err);
+      });
+    navigator.mediaDevices.getDisplayMedia({ video: true })
+      .then((stream) => {
+        setScreenStream(stream);
+      })
+      .catch(function (err) {
+        console.log("An error occurred: " + err);
+      });
+    navigator.mediaDevices.getUserMedia({audio: true})
+      .then((stream) => {
+        setVoiceStream(stream)
       })
       .catch(function (err) {
         console.log("An error occurred: " + err);
@@ -77,9 +105,9 @@ export const Call_OperatorsPage = (props) => {
     // socket.on('callUser', ({ name: callerName, signal, surname, email }) => {
     //   setCall({ isReceivingCall: true, name: callerName, signal, surname: surname, email: email })
     // })
-    socket.emit('createRoom', email, room, operatorId)
-    socket.on('callUser', ({ from, name: callerName, signal,surname, email }) => {
-      setCall({ isReceivingCall: true, from, name: callerName, signal , surname: surname, email: email});
+    socket.emit('createRoom', email, room, operatorId_mongo)
+    socket.on('callUser', ({ from, name: callerName, signal, surname: surname }) => {
+      setCall({ isReceivingCall: true, from, name: callerName, signal , surname: surname});
     });
     socket.on('update', data => console.log(data))
     socket.on('connect_error', err => console.log(err))
@@ -99,60 +127,78 @@ export const Call_OperatorsPage = (props) => {
     socket.on('connect_failed', err => console.log(err))
     socket.io.on("error", (err) => {
       console.log(err instanceof Error); // true
-      console.log(err.message); // not authorized
+      toast.error(`перезагрузите браузер ошибка соединения №${err.message}`, {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        });
+       // not authorized
       console.log(err.data); // { content: "Please retry later" }
     });
-  }, [])
-  useEffect(() => {
-    ; (async () => {
-      // проверяем поддержку
-      if (navigator.mediaDevices.getDisplayMedia) {
-        try {
-          // получаем поток
-          navigator.mediaDevices.getDisplayMedia({ video: true })
-            .then((currentStream) => {
-              setScreenStream(currentStream);
-            })
-            .catch(function (err) {
-              console.log("An error occurred: " + err);
-            });
-        } catch (e) {
-          console.error('*** getDisplayMedia', e)
-          setLoading(false)
+  }else{
+    console.log(operatorId);
+    socket.emit('createRoom', email);
+    socket.on('busy__room', (data) => { setBusy__room(data); console.log(data, "_____________busy________") });
+    socket.on('update', data => console.log(data))
+    socket.on('connect_error', err => {console.log(err)
+    setTimeout(() => {
+      window.location.reload(); 
+    }, 3000);
+    })
+    socket.on('disconnect', () => { window.location.reload(); })
+    socket.on('connect_failed', err => console.log(err))
+    socket.on('callEndeMessage', () => {
+      window.location.reload();
+    })
+    socket.on('callUser', ({ from, name: callerName, signal }) => {
+      setCall({ isReceivingCall: true, from, name: callerName, signal });
+    });
+    socket.on('online_room', (data) => {
+      setOnline_room(data);
+    })
+
+    if (navigator.mediaDevices === undefined) {
+      navigator.mediaDevices = {};
+    }
+    if (navigator.mediaDevices.getUserMedia === undefined) {
+      navigator.mediaDevices.getUserMedia = function (constraints) {
+        var getUserMedia = (
+          navigator.getUserMedia ||
+          navigator.webkitGetUserMedia ||
+          navigator.mozGetUserMedia
+        );
+        if (!getUserMedia) {
+          return Promise.reject(new Error('getUserMedia is not implemented in this browser'));
         }
-      } else {
-        console.warn('*** getDisplayMedia not supported')
-        setLoading(false)
-      }
-    })()
+        return new Promise(function (resolve, reject) {
+          getUserMedia.call(navigator, constraints, resolve, reject);
+        });
+
+      };
+    }
+    navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+      .then((stream) => {
+        setStream(stream);
+        myVideo.current.srcObject = stream;
+      })
+      .catch(function (err) {
+        console.log("An error occurred: " + err);
+      });
+  }
   }, [])
+
   useEffect(() => {
-    ; (async () => {
-      if (navigator.mediaDevices.getUserMedia) {
-        if (screenStream) {
-          try {
-            navigator.mediaDevices.getUserMedia({
-              audio: true
-            })
-              .then((currentStream) => {
-                setVoiceStream(currentStream)
-              })
-              .catch(function (err) {
-                console.log("An error occurred: " + err);
-              });
-          } catch (e) {
-            console.error('*** getUserMedia', e)
-            setVoiceStream('unavailable')
-          } finally {
-            setLoading(false)
-          }
-        }
-      } else {
-        console.warn('*** getUserMedia not supported')
-        setLoading(false)
-      }
-    })()
-  }, [screenStream])
+    var rand = Math.floor(Math.random() * online_room.length);
+    if (online_room[rand]) {
+      let id = online_room[rand]
+      setOperatorId(id.operator)
+      setBusy__room(false);
+    }
+  },[online_room])
   function startRecording() {
     if (screenStream && voiceStream && !mediaRecorder) {
       setRecording(true)
@@ -183,16 +229,59 @@ export const Call_OperatorsPage = (props) => {
     mediaRecorder = null
     dataChunks = []
   }
+  // const answerCall = () => {
+  //   setCallAccepted(true);
+
+  //   const peer = new Peer({ initiator: false, trickle: false, stream: stream});
+
+  //   peer.on('signal', (data) => {
+  //     socket.emit('answerCall', { signal: data, to: call.from });
+  //   });
+
+  //   peer.on('stream', (currentStream) => {
+  //     console.log('stream');
+  //     console.log(currentStream);
+  //     userVideo.current.srcObject = currentStream;
+  //   });
+  //   peer.signal(call.signal);
+
+  //   connectionRef.current = peer;
+  // };
+
+  // const callUser = (id) => {
+  //   const peer = new Peer({ initiator: true, trickle: false, stream: stream});
+
+  //   peer.on('signal', (data) => {
+  //     socket.emit('callUser', { userToCall: id, signalData: data, from: email, name });
+  //   });
+
+  //   peer.on('stream', (currentStream) => {
+  //     console.log('sream1111');
+  //     userVideo.current.srcObject = currentStream;
+  //   });
+
+  //   socket.on('callAccepted', (signal) => {
+  //     setCallAccepted(true);
+
+  //     peer.signal(signal);
+  //   });
+
+  //   connectionRef.current = peer;
+  // };
+ 
   const answerCall = () => {
     startRecording()
     setCallAccepted(true);
-    const peer = new Peer({ initiator: false, trickle: false, stream });
+    const peer = new Peer({ initiator: false,  trickle: false, stream: stream });
     peer.on('signal', (data) => {
+      console.log('log№1');
       socket.emit('answerCall', { signal: data, to: call.from });
     });
-    peer.on('stream', (currentStream) => {
-      userVideo.current.srcObject  = currentStream;
+    peer.on('stream', data => {
+      console.log('log№2');
+      userVideo.current.srcObject  = data;
     });
+    peer.on('error', (err) => {console.log(err);})
 
     peer.signal(call.signal);
 
@@ -200,16 +289,17 @@ export const Call_OperatorsPage = (props) => {
   };
 
   const callUser = (id) => {
-    const peer = new Peer({ initiator: true, trickle: false, stream });
+    const peer = new Peer({ initiator: true, trickle: false, stream: stream });
 
+    peer.on('error', (err) => {console.log(err);})
     peer.on('signal', (data) => {
-      socket.emit('callUser', { userToCall: id, signalData: data, from: id, name,surname,email });
+      console.log('log№3');
+      socket.emit('callUser', { userToCall: id, signalData: data, from: email, name:name, surname:surname});
     });
-
-    peer.on('stream', (currentStream) => {
-      userVideo.current.srcObject = currentStream;
+    peer.on('stream', (data) => {
+      console.log('log№4');
+      userVideo.current.srcObject = data;
     });
-
     socket.on('callAccepted', (signal) => {
       setCallAccepted(true);
       peer.signal(signal);
@@ -217,6 +307,9 @@ export const Call_OperatorsPage = (props) => {
 
     connectionRef.current = peer;
   };
+
+
+
   window.onerror = function(msg, url, lineNo, columnNo, error) {
     // ... обработка ошибки ...
    if(msg==='Uncaught Error: Connection failed.'){
@@ -239,12 +332,19 @@ export const Call_OperatorsPage = (props) => {
 
   const leaveCall = () => {
     stopRecording();
-    socket.emit('callEnde', call.email);
+    socket.emit('callEnde', call.from);
     connectionRef.current.destroy();
     setTimeout(() => {
       window.location.reload();
     }, 1500);
   };
+  const tabPane1 = () => {
+    setTabPanes({ screen1: !tabPanes.screen1, screen2: tabPanes.screen1 })
+  }
+
+  const tabPane2 = () => {
+    setTabPanes({ screen2: !tabPanes.screen2, screen1: tabPanes.screen2 })
+  }
   return (
     <div className="container">
             <ToastContainer
@@ -268,61 +368,57 @@ export const Call_OperatorsPage = (props) => {
   /> */}
 
       {data.userEmail}
-      <p>CallPage</p>
-      <div className="row Operators-row">
+      <h1 className={styles.title_callOperator}>Переводчик жестового языка</h1>
+      <div className="row Operators-row" >
+      <div className={styles.container} >
         {stream && (
-          <div className="col-6 video">
-            <video playsInline muted ref={myVideo} autoPlay className="video-player"></video>
-            <h1>{name}</h1>
+          <div className={styles.video_row}>
+            <div className={styles.video + " " + `${tabPanes.screen2 && styles.video_player_little}`} onClick={() => { tabPane1() }}>
+              <video playsInline ref={myVideo} muted autoPlay className={styles.video_player_user+" "+styles.video_player} />
+            </div>
           </div>
         )}
         {callAccepted && !callEnded && (
-          userVideo ?
-            <div className="col-6 video">
-              <video playsInline ref={userVideo} autoPlay className="video-player-use"></video>
-              <h3>{call.name} {call.surname}</h3>
-              <h3>{call.email}</h3>
-            </div> :
-            <div className="col-6 video">
-              <img src={Image} />
-            </div>
+
+            <div className={styles.video_row}>
+              <div className={styles.video + " " + `${tabPanes.screen1 && styles.video_player_little}`} onClick={() => { tabPane1() }}>
+                <video  ref={userVideo} autoPlay className={styles.video_player_operator + ' ' + styles.video_player}></video>
+                <h6 className={styles.user_name}>{call.name} {call.surname} </h6>
+                <h6 className={styles.user_name}>{call.email} </h6>
+              </div> 
+            </div> 
+            // <div className="col-6 video">
+            //   <img src={Image} />
+            // </div>
         )}
       </div>
-      <div>
-        <form>
-          <div className="text-cente">
-            {/* <div>
-              <h3>Make a call</h3>
-              <input label="ID to call" value={idToCall} onChange={(e) => setIdToCall(e.target.value)} />
-              {callAccepted && !callEnded ? (
-                <button type="button" onClick={leaveCall}>
-                  Hang Up
-                </button>
-              ) : (
-                <button type="button" onClick={() => callUser(idToCall)}>
-                  Call
-                </button>
-              )}
-            </div> */}
-
-            {callAccepted && !callEnded && (
-               <div className={styles.HangUp_div}>
-             <button type="button" className={styles.call_btn_h} onClick={leaveCall}>
-                  {/* Hang Up */}
-                </button>
-                </div>
-              ) }
-          </div>
-        </form>
       </div>
       {call.isReceivingCall && !callAccepted && (
-        <div style={{ display: 'flex', justifyContent: 'space-around' }}>
-          <h1>{call.name} is calling:</h1>
-          <button type="submit" onClick={answerCall}>
-            Answer
-          </button>
+        <div  className={styles.btn_call_text}>
+          <p className={styles.btn_call_name}>{call.name}</p> 
+          <button className={styles.btn_call} onClick={answerCall}>
+            <div className={styles.btn_call__ico}>
+              <i className="fas fa-phone-alt"></i>
+            </div>
+        </button>
         </div>
       )}
+          
+      <div className={styles.wraper_callBtn}>
+      {callAccepted && !callEnded ? (
+             <div className={styles.HangUp_div}>
+                <button type="button" className={styles.call_btn_h} onClick={leaveCall}>
+                  {/* Hang Up */}
+                </button>
+              </div>
+        ) : (online_room.length&&
+              <div className={styles.HangUp_div}>
+                <button type="button" className={styles.callBtn} onClick={() => { callUser(operatorId); setCallAccepted(true)}}>
+                   {/* Hang D */}
+                </button>
+              </div>
+            )}
+      </div>
       {/* <button onClick={onClick} >
         {!recording ? 'Start' : 'Stop'}
       </button> */}
