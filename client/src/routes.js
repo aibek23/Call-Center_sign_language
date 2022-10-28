@@ -42,12 +42,17 @@ export const useRoutes = (isAuthenticated) => {
         <Route path="/CallsPage" exact>
           <CallsPage />
         </Route>
-        <Route path="/CallPage" exact>
-          <CallPage />
-        </Route>
+        {operator?
         <Route path="/Call_OperatorsPage">
             <Call_OperatorsPage props={operator} />
-          </Route>
+          </Route>:
+             <Route path="/Call_OperatorsPage">
+             <Call_OperatorsPage props={operator} />
+           </Route>
+                //   <Route path="/CallPage" exact>
+                //   <CallPage />
+                // </Route>
+  }
         <Redirect to="/HomePage" />
       </Switch>
       </>

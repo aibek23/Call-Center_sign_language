@@ -30,7 +30,7 @@ const saveData = async (data, username) => {
 	const dirName = new Date().toLocaleDateString().replace(/\./g, '_')
 	const dirPath = `${videoPath}/${dirName}`
 
-	const fileName = `${Date.now()}-${username}.webm`
+	const fileName = `${Date.now()}-${username}.mp4`
 	const tempFilePath = `${dirPath}/${fileName}`
 	const finalFilePath = `${dirPath}/${fileName}`
 
@@ -49,7 +49,7 @@ const saveData = async (data, username) => {
 
 	try {
 		const videoBlob = new Blob(data, {
-			type: 'video/webm'
+			type: 'video/mp4'
 		})
 		const videoBuffer = Buffer.from(await videoBlob.arrayBuffer())
 		await writeFile(tempFilePath, videoBuffer)
@@ -78,7 +78,7 @@ if(process.env.NODE_ENV === 'production'){
 		res.sendFile(path.resolve(__dirname,'client','build','index.html'))
 	})
 }
-const io = require("socket.io")(serverS, {
+const io = require("socket.io")(server, {
 	cors: {
 		origin: "*",
 		methods: ["GET", "POST"]
@@ -125,7 +125,9 @@ io.on("connection", (socket) => {
 	})
 
 	socket.on('callEnde', (data) => {
+		io.sockets.in(data).emit("callEndeMessage", "true");
 		operators.forEach(e => {
+			log(e.operator)
 			if (e.operator == data) {
 				io.sockets.in(data).emit("callEndeMessage", "true");
 			}
@@ -149,13 +151,13 @@ io.on("connection", (socket) => {
 			dataChunks[username] = []
 		}
 	});
-	socket.on("callUser", ({ userToCall, signalData, from, name, surname, email }) => {
-		io.to(userToCall).emit("callUser", { signal: signalData, from, name, surname, email });
+	socket.on("callUser", ({ userToCall, signalData, from, name, surname }) => {
+		io.to(userToCall).emit("callUser", { signal: signalData, from, name, surname });
 	});
 	socket.on("answerCall", (data) => {
 		io.to(data.to).emit("callAccepted", data.signal)
 		operators.forEach((e, i) => {
-			if (e.operator == data.to) {
+			if (e.operator === data.to) {
 				operators.splice(i, 1)
 			}
 		})
@@ -182,7 +184,7 @@ async function start() {
 			useUnifiedTopology: true,
 			useCreateIndex: true
 		})
-		serverS.listen(PORT, () => console.log(`App has been started on port ${PORT}...`))	
+		server.listen(PORT, () => console.log(`App has been started on port ${PORT}...`))	
 	} catch (e) {
 		console.log('Server Error', e.message)
 		process.exit(1)

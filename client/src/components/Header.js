@@ -30,7 +30,8 @@ export const Header = (props) => {
                   <NavLink className="nav-link" to="/Call_OperatorsPage">прием звонков</NavLink>
                 </li> :
                 <li className="nav-item">
-                  <NavLink className="nav-link" to="/CallPage">позвонить</NavLink>
+                  <NavLink className="nav-link" to="/Call_OperatorsPage">позвонить</NavLink>
+                  {/* <NavLink className="nav-link" to="/CallPage">позвонить</NavLink> */}
                 </li> : ' '}
             </ul>
             <ul className='navbar-nav'>

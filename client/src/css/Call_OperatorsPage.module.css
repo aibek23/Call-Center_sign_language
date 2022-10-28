@@ -1,20 +1,375 @@
+.title_callOperator{
+  font-size: 2.5vw;
+  color: #fff;
+  letter-spacing: 5px;
+  text-align: center;
+  margin-top: 40px;
+  margin-bottom: 20px;
+  text-shadow: 1px 1px 0 #ccc, 2px 2px 0 #ccc, 3px 3px 0 #444, 4px 4px 0 #444, 5px 5px 0 #444, 6px 6px 0 #444, 5px 5px 15px #999;
+}
+.container{
+  position: relative;
+  overflow: hidden;
+      height: 100%;
+      padding: 15px;
+  }
+  .video_row{
+    display: flex;
+    flex-direction: column;
+  }
+.video{
+  padding: 5px;
+  background-color:rgb(255, 255, 255);
+
+}
+.video_player{
+  display: block;
+  width: 100%;
+  border-bottom:12px;
+  /* max-width: 450px; */
+}
+.user_name{
+  margin-top:5px;
+  margin-bottom: 0;
+}
+
 .HangUp_div{
+    width: 100%;
+    /* position: relative; */
+    display: flex;
+    flex-direction: row;
+   justify-content: center
+}
+/* .wraper_callBtn{
+  display: flex;
+justify-content: center;
+} */
+
+
+.call_btn_h{
+
+  position: fixed;
+  border: none;
+  width: 95px;
+  height: 95px;
+  border-radius: 30%;;
+  background-image:url(../img/Call_Ende.jpg);
+  background-size: 120px;
+  background-clip: border-box;
+  /* top:-50px; */
+  background-position: -12px -12px; 
+  bottom: 30px;
+}
+.callBtn{
+position: fixed;
+z-index: 1500;
+border: none;
+width: 95px;
+height: 95px;
+border-radius: 30%;;
+background-image:url(../img/call_management.icon.png);
+background-size: 120px;
+background-clip: border-box;
+/* top:-50px; */
+background-position: -12px -12px; 
+bottom: 30px;
+}
+.btn_call_text{
+  position: fixed;
+  display: flex;
+  align-items: center;
+  right: 50px;
+  bottom: 50px;
+  z-index: 999;
+  align-items: flex-end;
+}
+.btn_call_name{
+  background-color: #38a3fd;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 8px;
+  margin-right: 10px;
+}
+
+.btn_call {
+  background: #38a3fd;
+  border: 2px solid #38a3fd;
+  border-radius: 50%;
+  box-shadow: 0 8px 10px rgba(56, 163, 253, 0.3);
+  cursor: pointer;
+  height: 60px;
+  width: 60px;
+  text-align: center;
+  transition: .3s;
+  -webkit-animation: hoverWave linear 1s infinite;
+  animation: hoverWave linear 1s infinite;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-decoration: none;
+}
+.video_row{
+  display: flex;
+  flex-direction: column;
+}
+.wraper_callBtn{
+      display: flex;
+    justify-content: center;
+}
+/* .callBtn{
+    position: absolute;
+      border: none;
+    min-width: 139px;
+    min-height: 139px;
+    border-radius:56px;
+    background-image:url(../img/call_management.icon.png);
+    background-clip: border-box;
+    background-position: -2px -1px;
+    bottom: 50px;
+} */
+
+/* .video{
+     border: solid 2px #2f0b45;
+     
+     
+} */
+.video video{
+    width: 100%;
+}
+.video_player_operator{
+  background-color: white;
+    background-image:url(../img/png-clipart-customer-service-call-centre.png.gif);
+     background-clip: border-box;
+     background-repeat: no-repeat;
+     background-position: center;
+    background-size: 100px 100px;
+}
+.video_player_little{
+  position: absolute;
+  bottom: 20px;
+  z-index: 15;
+  border: none;
+ width:300px;
+ right: 12px;
+}
+.video_player_little video{
+  background-size: 50px 50px;
+}
+.btn_call__ico {
+  display: flex;
+  justify-content: center;
+  background-image:url(../img/Call_USS.png);
+  background-size: 50px;
+  background-position: -3px 0px; 
+  align-items: center;
+  animation: 1200ms ease 0s normal none 1 running shake;
+  animation-iteration-count: infinite;
+  -webkit-animation: 1200ms ease 0s normal none 1 running shake;
+  -webkit-animation-iteration-count: infinite;
+  color: white;
+  width: 50px;
+  height: 50px;
+  padding-top: 5px;
+  transition: .3s all;
+}
+
+.btn_call:hover {
+  background-color: #0bcd74;
+}
+
+.btn_call:hover .btn-call__ico {
+  color: #38a3fd;
+}
+
+@media (max-width: 768px) { 
+  /* .HangUp_div{
     width: 100%;
     position: relative;
     display: flex;
     flex-direction: row;
    justify-content: center
+} */
+.video_player_little{
+  position: fixed;
+  bottom: 20%;
+  z-index: 1500;
+  border: none;
+ width:200px;
+ right: 12px;
 }
-.call_btn_h{
-    position: absolute;
-      border: none;
-    width: 120px;
-    height: 120px;
-    border-radius:30%;
-    background-image:url(../img/Call_Ende.jpg);
-    background-size: 120px;
-    background-clip: border-box;
-    top:-50px;
-    /* background-position: -2px -1px; */
-    /* bottom: 30px; */
+
+}
+
+@-webkit-keyframes hoverWave {
+  0% {
+      box-shadow: 0 8px 10px rgba(56, 163, 253, 0.3), 0 0 0 0 rgba(56, 163, 253, 0.2), 0 0 0 0 rgba(56, 163, 253, 0.2)
+  }
+
+  40% {
+      box-shadow: 0 8px 10px rgba(56, 163, 253, 0.3), 0 0 0 15px rgba(56, 163, 253, 0.2), 0 0 0 0 rgba(56, 163, 253, 0.2)
+  }
+
+  80% {
+      box-shadow: 0 8px 10px rgba(56, 163, 253, 0.3), 0 0 0 30px rgba(56, 163, 253, 0), 0 0 0 26.7px rgba(56, 163, 253, 0.067)
+  }
+
+  100% {
+      box-shadow: 0 8px 10px rgba(56, 163, 253, 0.3), 0 0 0 30px rgba(56, 163, 253, 0), 0 0 0 40px rgba(56, 163, 253, 0.0)
+  }
+}
+
+@keyframes hoverWave {
+  0% {
+      box-shadow: 0 8px 10px rgba(56, 163, 253, 0.3), 0 0 0 0 rgba(56, 163, 253, 0.2), 0 0 0 0 rgba(56, 163, 253, 0.2)
+  }
+
+  40% {
+      box-shadow: 0 8px 10px rgba(56, 163, 253, 0.3), 0 0 0 15px rgba(56, 163, 253, 0.2), 0 0 0 0 rgba(56, 163, 253, 0.2)
+  }
+
+  80% {
+      box-shadow: 0 8px 10px rgba(56, 163, 253, 0.3), 0 0 0 30px rgba(56, 163, 253, 0), 0 0 0 26.7px rgba(56, 163, 253, 0.067)
+  }
+
+  100% {
+      box-shadow: 0 8px 10px rgba(56, 163, 253, 0.3), 0 0 0 30px rgba(56, 163, 253, 0), 0 0 0 40px rgba(56, 163, 253, 0.0)
+  }
+}
+
+/* animations icon */
+
+@keyframes shake {
+  0% {
+      transform: rotateZ(0deg);
+      -ms-transform: rotateZ(0deg);
+      -webkit-transform: rotateZ(0deg);
+  }
+
+  10% {
+      transform: rotateZ(-30deg);
+      -ms-transform: rotateZ(-30deg);
+      -webkit-transform: rotateZ(-30deg);
+  }
+
+  20% {
+      transform: rotateZ(15deg);
+      -ms-transform: rotateZ(15deg);
+      -webkit-transform: rotateZ(15deg);
+  }
+
+  30% {
+      transform: rotateZ(-10deg);
+      -ms-transform: rotateZ(-10deg);
+      -webkit-transform: rotateZ(-10deg);
+  }
+
+  40% {
+      transform: rotateZ(7.5deg);
+      -ms-transform: rotateZ(7.5deg);
+      -webkit-transform: rotateZ(7.5deg);
+  }
+
+  50% {
+      transform: rotateZ(-6deg);
+      -ms-transform: rotateZ(-6deg);
+      -webkit-transform: rotateZ(-6deg);
+  }
+
+  60% {
+      transform: rotateZ(5deg);
+      -ms-transform: rotateZ(5deg);
+      -webkit-transform: rotateZ(5deg);
+  }
+
+  70% {
+      transform: rotateZ(-4.28571deg);
+      -ms-transform: rotateZ(-4.28571deg);
+      -webkit-transform: rotateZ(-4.28571deg);
+  }
+
+  80% {
+      transform: rotateZ(3.75deg);
+      -ms-transform: rotateZ(3.75deg);
+      -webkit-transform: rotateZ(3.75deg);
+  }
+
+  90% {
+      transform: rotateZ(-3.33333deg);
+      -ms-transform: rotateZ(-3.33333deg);
+      -webkit-transform: rotateZ(-3.33333deg);
+  }
+
+  100% {
+      transform: rotateZ(0deg);
+      -ms-transform: rotateZ(0deg);
+      -webkit-transform: rotateZ(0deg);
+  }
+}
+
+@-webkit-keyframes shake {
+  0% {
+      transform: rotateZ(0deg);
+      -ms-transform: rotateZ(0deg);
+      -webkit-transform: rotateZ(0deg);
+  }
+
+  10% {
+      transform: rotateZ(-30deg);
+      -ms-transform: rotateZ(-30deg);
+      -webkit-transform: rotateZ(-30deg);
+  }
+
+  20% {
+      transform: rotateZ(15deg);
+      -ms-transform: rotateZ(15deg);
+      -webkit-transform: rotateZ(15deg);
+  }
+
+  30% {
+      transform: rotateZ(-10deg);
+      -ms-transform: rotateZ(-10deg);
+      -webkit-transform: rotateZ(-10deg);
+  }
+
+  40% {
+      transform: rotateZ(7.5deg);
+      -ms-transform: rotateZ(7.5deg);
+      -webkit-transform: rotateZ(7.5deg);
+  }
+
+  50% {
+      transform: rotateZ(-6deg);
+      -ms-transform: rotateZ(-6deg);
+      -webkit-transform: rotateZ(-6deg);
+  }
+
+  60% {
+      transform: rotateZ(5deg);
+      -ms-transform: rotateZ(5deg);
+      -webkit-transform: rotateZ(5deg);
+  }
+
+  70% {
+      transform: rotateZ(-4.28571deg);
+      -ms-transform: rotateZ(-4.28571deg);
+      -webkit-transform: rotateZ(-4.28571deg);
+  }
+
+  80% {
+      transform: rotateZ(3.75deg);
+      -ms-transform: rotateZ(3.75deg);
+      -webkit-transform: rotateZ(3.75deg);
+  }
+
+  90% {
+      transform: rotateZ(-3.33333deg);
+      -ms-transform: rotateZ(-3.33333deg);
+      -webkit-transform: rotateZ(-3.33333deg);
+  }
+
+  100% {
+      transform: rotateZ(0deg);
+      -ms-transform: rotateZ(0deg);
+      -webkit-transform: rotateZ(0deg);
+  }
 }

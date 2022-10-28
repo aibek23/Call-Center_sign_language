@@ -2,5 +2,5 @@
   "port": 5000,
   "jwtSecret": "mongodb",
   "mongoUri": "mongodb+srv://root:root@cluster0.ri2wq.mongodb.net/videochatDB1?retryWrites=true&w=majority",
-  "baseUrl": "https://kosg.su:5000"
+  "baseUrl": "http://localhost:5000"
 }

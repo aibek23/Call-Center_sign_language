@@ -57,7 +57,6 @@ export const AuthPage = () => {
     // console.log({...form});
     try {
       const data = await request('/api/auth/login', 'POST', {...form})
-      console.log(data);
       auth.login(data.token, data.userId , form.email, data.username, data.surname, checkbox)
     } catch (e) {}
   }
