@@ -32,11 +32,9 @@ export const AuthPage = () => {
   // useEffect(() => {
   //   window.M.updateTextFields()
   // }, [])
-
   const changeHandler = event => {
     setForm({ ...form, [event.target.name]: event.target.value })
   }
-
   const registerHandler = async () => {
     try {
       const data = await request('/api/auth/register', 'POST', {...form})
@@ -52,7 +50,6 @@ export const AuthPage = () => {
    
     } catch (e) {}
   }
-
   const loginHandler = async () => {
     // console.log({...form});
     try {
@@ -66,7 +63,6 @@ export const AuthPage = () => {
   const tabPane2 = () =>{
     setTabPanes({activebtn1:false,activebtn2:true})
   }
-
   return (<>
   < Header props={null} />
     <div >
@@ -96,19 +92,18 @@ export const AuthPage = () => {
                   <div className={"form-group "+ styles.form_group}>
                     <label htmlFor="exampleInputEmail1">Email</label>
                     <input type="email" className={"form-control " + styles.form_control}                     
-                    id="email"
-                    name="email"
-                    value={form.email}
+                        id="email"
+                        name="email"
+                        value={form.email}
                         onChange={changeHandler} />
                   </div>
                   <div className={styles.form_group+" form-group "}>
                     <label htmlFor="exampleInputPassword1">пароль</label>
                     <input type="password" className={styles.form_control+" form-control"}
-
-                                      id="password"
-                  name="password"
-                  value={form.password}
-                  onChange={changeHandler} />
+                        id="password"
+                        name="password"
+                        value={form.password}
+                        onChange={changeHandler} />
                   </div>
                   <div className={"form-group "+styles.form_group}>
                     <div className={" form-check "+styles.main_checkbox_+" form-check"}>
@@ -145,20 +140,17 @@ export const AuthPage = () => {
                   </div>
                   <div className={styles.form_group} style={{}}>
                     <label htmlFor="exampleInputEmail1">фамилия</label>
-
-                                    <input
-                                      placeholder="ведите ваше фамилия"
-                                      id="exampleInputEmail1"
-                                      type="text"
-                                      name="surname"
-                                      className={"form-control " + styles.form_control}
-                                      value={form.surname}
-                                      onChange={changeHandler}
-                                    />
-      
+                      <input
+                        placeholder="ведите ваше фамилия"
+                        id="exampleInputEmail1"
+                        type="text"
+                        name="surname"
+                        className={"form-control " + styles.form_control}
+                        value={form.surname}
+                        onChange={changeHandler}
+                      />
                   </div>
                   <div className={styles.form_group}>
-    
                     <label htmlFor="exampleInputEmail1">Email</label>
                       <input
                         placeholder="Введите email"
@@ -174,12 +166,12 @@ export const AuthPage = () => {
                     <label htmlFor="exampleInputPassword1">пароль</label>
                       <input type="password"
                         className={styles.form_control + " form-control"}
-                                  placeholder="Введите пароль"
-                  id="password"
-                  name="password"
-                  value={form.password}
-                  onChange={changeHandler}
-                      />
+                        placeholder="Введите пароль"
+                        id="password"
+                        name="password"
+                        value={form.password}
+                        onChange={changeHandler}
+                        />
                   </div>
                   <div className={"form-group "+styles.form_group}>
                     <div className={" form-check "+styles.main_checkbox_+" form-check"}>
@@ -202,82 +194,6 @@ export const AuthPage = () => {
               </div>}
             </div>
           </div>
-          {/* <style type="text/css" > {styles}</style>  */}
-
-{/* 
-        <div classNameName="card blue darken-1">
-          <div classNameName="card-content white-text">
-            <span classNameName="card-title">Авторизация</span>
-            <div>
-            <div classNameName="input-field">
-                <input
-                  placeholder="Введите email"
-                  id="email"
-                  type="text"
-                  name="email"
-                  classNameName="yellow-input"
-                  value={form.name}
-                  onChange={changeHandler}
-                />
-                <label htmlFor="name">имя</label>
-              </div>
-              <div classNameName="input-field">
-                <input
-                  placeholder="Введите email"
-                  id="surname"
-                  type="text"
-                  name="surname"
-                  classNameName="yellow-input"
-                  value={form.surname}
-                  onChange={changeHandler}
-                />
-                <label htmlFor="surname">фамилия</label>
-              </div>
-
-              <div classNameName="input-field">
-                <input
-                  placeholder="Введите email"
-                  id="email"
-                  type="text"
-                  name="email"
-                  classNameName="yellow-input"
-                  value={form.email}
-                  onChange={changeHandler}
-                />
-                <label htmlFor="email">Email</label>
-              </div>
-              <div classNameName="input-field">
-                <input
-                  placeholder="Введите пароль"
-                  id="password"
-                  type="password"
-                  name="password"
-                  value={form.password}
-                  onChange={changeHandler}
-                />
-                <label htmlFor="password">Пароль</label>
-              </div>
-
-            </div>
-          </div>
-          <div classNameName="card-action">
-            <button
-              classNameName="btn yellow darken-4"
-              style={{marginRight: 10}}
-              disabled={loading}
-              onClick={loginHandler}
-            >
-              Войти
-            </button>
-            <button
-              classNameName="btn grey lighten-1 black-text"
-              onClick={registerHandler}
-              disabled={loading}
-            >
-              Регистрация
-            </button>
-          </div>
-        </div> */}
     </div>
     </div>
     </div>

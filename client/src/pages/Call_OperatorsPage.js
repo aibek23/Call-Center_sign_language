@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
+import ringtony from "../audeo/skayp-call.mp3"
+import toot from "../audeo/toot.mp3"
 // import { Image } from "../img/kisspng-avatar-user-medicine-surgery.jpg";
 // import StopWatch from "../components/StopWatch";
 // import { HangUp } from "../img/Call_Ende.jpg";
@@ -11,16 +13,15 @@ import { ContextProvider } from "../context/Context";
 import { useStopWatch } from "../hooks/StopWatch.hook";
 import Timer from "../components/Timer";
 import ControlButtons from "../components/ControlButtons";
-const socket = openSocket.connect('http://kosg.su', { reconnection: false })
+const socket = openSocket.connect('https://kosg.su', { reconnection: false })
 export const Call_OperatorsPage = (props) => {
-  const {isActive,isPaused,handleStart,handlePauseResume,time} = useContext(ContextProvider)
-  // const [handleStart,handlePauseResume,time] = useStopWatch()
+const {isActive,isPaused,handleStart,handlePauseResume,time} = useContext(ContextProvider)
+// const [handleStart,handlePauseResume,time] = useStopWatch()
   
   const data = JSON.parse(localStorage.getItem('userData'));
-  const name = data.username
-  const surname = data.usersurname
-  const email = data.userEmail
-
+  const name = data.username;
+  const surname = data.usersurname;
+  const email = data.userEmail;
   const winHeight = window.innerHeight;
   const [callAccepted, setCallAccepted] = useState(false);
   const [callEnded, setCallEnded] = useState(false);
@@ -29,32 +30,31 @@ export const Call_OperatorsPage = (props) => {
   const [idToCall, setIdToCall] = useState('');
   // const [message, setMessage] = useState(' ')
 
-
   const [online_room, setOnline_room] = useState([]);
   const [busy__room, setBusy__room] = useState(true);
-  const [operatorId, setOperatorId] = useState()
+  const [operatorId, setOperatorId] = useState();
   const [tabPanes, setTabPanes] = useState({ screen1: true, screen2: false });
 
   const myVideo = useRef();
   const userVideo = useRef();
   const connectionRef = useRef();
   
-  const socketRef = useRef(socket)
+  const socketRef = useRef(socket);
 
-  const [screenStream, setScreenStream] = useState()
-  const [voiceStream, setVoiceStream] = useState()
-  const [recording, setRecording] = useState(false)
-  const [loading, setLoading] = useState(true)
-  let mediaRecorder = null
-  let dataChunks = []
-  let room
-  let operatorId_mongo = data.userId
-  const username = useRef(`${name}_${surname}_${operatorId_mongo}_${Date.now().toString().slice(-4)}`)
-
+  const [screenStream, setScreenStream] = useState();
+  const [voiceStream, setVoiceStream] = useState();
+  const [recording, setRecording] = useState(false);
+  const [loading, setLoading] = useState(true);
+  let mediaRecorder = null;
+  let dataChunks = [];
+  let room;
+  let operatorId_mongo = data.userId;
+  const username = useRef(`${name}_${surname}_${operatorId_mongo}_${Date.now().toString().slice(-4)}`);
+  const Audeo_Call = new Audio(ringtony);
+  const Toot_Call = new Audio(toot);
+  Toot_Call.loop = true;
   useEffect(() => {
     if(props.props){
-      console.log('ок');
-
       room = 'room' + props.props.operator;
       socketRef.current.emit('user:connect', username.current)
     if (navigator.mediaDevices === undefined) {
@@ -73,7 +73,6 @@ export const Call_OperatorsPage = (props) => {
         return new Promise(function (resolve, reject) {
           getUserMedia.call(navigator, constraints, resolve, reject);
         });
-
       };
     }
     navigator.mediaDevices.getUserMedia({ video: true, audio: true })
@@ -98,13 +97,6 @@ export const Call_OperatorsPage = (props) => {
       .catch(function (err) {
         console.log("An error occurred: " + err);
       });
-    // socket.on('CallEnded', (callUser) => {
-    //   setCallEnded(callUser);
-    //   window.location.reload();
-    // });
-    // socket.on('callUser', ({ name: callerName, signal, surname, email }) => {
-    //   setCall({ isReceivingCall: true, name: callerName, signal, surname: surname, email: email })
-    // })
     socket.emit('createRoom', email, room, operatorId_mongo)
     socket.on('callUser', ({ from, name: callerName, signal, surname: surname }) => {
       setCall({ isReceivingCall: true, from, name: callerName, signal , surname: surname});
@@ -136,7 +128,6 @@ export const Call_OperatorsPage = (props) => {
         draggable: true,
         progress: undefined,
         });
-       // not authorized
       console.log(err.data); // { content: "Please retry later" }
     });
   }else{
@@ -229,82 +220,40 @@ export const Call_OperatorsPage = (props) => {
     mediaRecorder = null
     dataChunks = []
   }
-  // const answerCall = () => {
-  //   setCallAccepted(true);
-
-  //   const peer = new Peer({ initiator: false, trickle: false, stream: stream});
-
-  //   peer.on('signal', (data) => {
-  //     socket.emit('answerCall', { signal: data, to: call.from });
-  //   });
-
-  //   peer.on('stream', (currentStream) => {
-  //     console.log('stream');
-  //     console.log(currentStream);
-  //     userVideo.current.srcObject = currentStream;
-  //   });
-  //   peer.signal(call.signal);
-
-  //   connectionRef.current = peer;
-  // };
-
-  // const callUser = (id) => {
-  //   const peer = new Peer({ initiator: true, trickle: false, stream: stream});
-
-  //   peer.on('signal', (data) => {
-  //     socket.emit('callUser', { userToCall: id, signalData: data, from: email, name });
-  //   });
-
-  //   peer.on('stream', (currentStream) => {
-  //     console.log('sream1111');
-  //     userVideo.current.srcObject = currentStream;
-  //   });
-
-  //   socket.on('callAccepted', (signal) => {
-  //     setCallAccepted(true);
-
-  //     peer.signal(signal);
-  //   });
-
-  //   connectionRef.current = peer;
-  // };
- 
   const answerCall = () => {
     startRecording()
     setCallAccepted(true);
+    Audeo_Call.loop = false;
+    Audeo_Call.pause();
     const peer = new Peer({ initiator: false,  trickle: false, stream: stream });
     peer.on('signal', (data) => {
       console.log('log№1');
       socket.emit('answerCall', { signal: data, to: call.from });
     });
     peer.on('stream', data => {
-      console.log('log№2');
       userVideo.current.srcObject  = data;
     });
     peer.on('error', (err) => {console.log(err);})
-
     peer.signal(call.signal);
-
     connectionRef.current = peer;
   };
 
   const callUser = (id) => {
+    Toot_Call.play()
     const peer = new Peer({ initiator: true, trickle: false, stream: stream });
 
     peer.on('error', (err) => {console.log(err);})
     peer.on('signal', (data) => {
-      console.log('log№3');
       socket.emit('callUser', { userToCall: id, signalData: data, from: email, name:name, surname:surname});
     });
     peer.on('stream', (data) => {
-      console.log('log№4');
+      Toot_Call.pause()
       userVideo.current.srcObject = data;
     });
     socket.on('callAccepted', (signal) => {
       setCallAccepted(true);
       peer.signal(signal);
     });
-
     connectionRef.current = peer;
   };
 
@@ -329,7 +278,6 @@ export const Call_OperatorsPage = (props) => {
    }
     return false;
   }
-
   const leaveCall = () => {
     stopRecording();
     socket.emit('callEnde', call.from);
@@ -341,10 +289,19 @@ export const Call_OperatorsPage = (props) => {
   const tabPane1 = () => {
     setTabPanes({ screen1: !tabPanes.screen1, screen2: tabPanes.screen1 })
   }
-
   const tabPane2 = () => {
     setTabPanes({ screen2: !tabPanes.screen2, screen1: tabPanes.screen2 })
   }
+  useEffect(() => {
+    if(call.isReceivingCall&&!callAccepted){
+      Audeo_Call.loop = true;
+      Audeo_Call.play();
+  }
+  },[call.isReceivingCall])
+    // if(callAccepted){
+    //   Audeo_Call.loop = false
+    //   Audeo_Call.pause();
+    // }
   return (
     <div className="container">
             <ToastContainer
@@ -366,7 +323,6 @@ export const Call_OperatorsPage = (props) => {
     handleStart={handleStart}
     handlePauseResume={handlePauseResume}
   /> */}
-
       {data.userEmail}
       <h1 className={styles.title_callOperator}>Переводчик жестового языка</h1>
       <div className="row Operators-row" >
@@ -396,14 +352,13 @@ export const Call_OperatorsPage = (props) => {
       {call.isReceivingCall && !callAccepted && (
         <div  className={styles.btn_call_text}>
           <p className={styles.btn_call_name}>{call.name}</p> 
-          <button className={styles.btn_call} onClick={answerCall}>
+          <button className={styles.btn_call} onClick={()=>{answerCall()}}>
             <div className={styles.btn_call__ico}>
               <i className="fas fa-phone-alt"></i>
             </div>
         </button>
         </div>
       )}
-          
       <div className={styles.wraper_callBtn}>
       {callAccepted && !callEnded ? (
              <div className={styles.HangUp_div}>
