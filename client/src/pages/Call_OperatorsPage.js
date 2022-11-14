@@ -9,25 +9,24 @@ import {toast, ToastContainer} from 'react-toastify'
 import Peer from 'simple-peer';
 import openSocket from 'socket.io-client';
 import 'react-toastify/dist/ReactToastify.css'
-import { ContextProvider } from "../context/Context";
-import { useStopWatch } from "../hooks/StopWatch.hook";
-import Timer from "../components/Timer";
-import ControlButtons from "../components/ControlButtons";
+// import { ContextProvider } from "../context/Context";
+// import { useStopWatch } from "../hooks/StopWatch.hook";
+// import Timer from "../components/Timer";
+// import ControlButtons from "../components/ControlButtons";
 const socket = openSocket.connect('https://kosg.su', { reconnection: false })
 export const Call_OperatorsPage = (props) => {
-const {isActive,isPaused,handleStart,handlePauseResume,time} = useContext(ContextProvider)
+// const {isActive,isPaused,handleStart,handlePauseResume,time} = useContext(ContextProvider)
 // const [handleStart,handlePauseResume,time] = useStopWatch()
   
   const data = JSON.parse(localStorage.getItem('userData'));
   const name = data.username;
   const surname = data.usersurname;
   const email = data.userEmail;
-  const winHeight = window.innerHeight;
   const [callAccepted, setCallAccepted] = useState(false);
   const [callEnded, setCallEnded] = useState(false);
   const [stream, setStream] = useState();
   const [call, setCall] = useState({});
-  const [idToCall, setIdToCall] = useState('');
+  // const [idToCall, setIdToCall] = useState('');
   // const [message, setMessage] = useState(' ')
 
   const [online_room, setOnline_room] = useState([]);
@@ -44,7 +43,7 @@ const {isActive,isPaused,handleStart,handlePauseResume,time} = useContext(Contex
   const [screenStream, setScreenStream] = useState();
   const [voiceStream, setVoiceStream] = useState();
   const [recording, setRecording] = useState(false);
-  const [loading, setLoading] = useState(true);
+  // const [loading, setLoading] = useState(true);
   let mediaRecorder = null;
   let dataChunks = [];
   let room;
@@ -54,6 +53,7 @@ const {isActive,isPaused,handleStart,handlePauseResume,time} = useContext(Contex
   const Toot_Call = new Audio(toot);
   Toot_Call.loop = true;
   useEffect(() => {
+    console.log();
     if(props.props){
       room = 'room' + props.props.operator;
       socketRef.current.emit('user:connect', username.current)
@@ -131,7 +131,6 @@ const {isActive,isPaused,handleStart,handlePauseResume,time} = useContext(Contex
       console.log(err.data); // { content: "Please retry later" }
     });
   }else{
-    console.log(operatorId);
     socket.emit('createRoom', email);
     socket.on('busy__room', (data) => { setBusy__room(data); console.log(data, "_____________busy________") });
     socket.on('update', data => console.log(data))
@@ -227,8 +226,7 @@ const {isActive,isPaused,handleStart,handlePauseResume,time} = useContext(Contex
     Audeo_Call.pause();
     const peer = new Peer({ initiator: false,  trickle: false, stream: stream });
     peer.on('signal', (data) => {
-      console.log('log№1');
-      socket.emit('answerCall', { signal: data, to: call.from });
+      socket.emit('answerCall', { signal: data, to: call.from ,room:'room' + props.props.operator});
     });
     peer.on('stream', data => {
       userVideo.current.srcObject  = data;
@@ -323,7 +321,6 @@ const {isActive,isPaused,handleStart,handlePauseResume,time} = useContext(Contex
     handleStart={handleStart}
     handlePauseResume={handlePauseResume}
   /> */}
-      {data.userEmail}
       <h1 className={styles.title_callOperator}>Переводчик жестового языка</h1>
       <div className="row Operators-row" >
       <div className={styles.container} >
@@ -366,11 +363,16 @@ const {isActive,isPaused,handleStart,handlePauseResume,time} = useContext(Contex
                   {/* Hang Up */}
                 </button>
               </div>
-        ) : (online_room.length&&
+        ) : (online_room.length?
               <div className={styles.HangUp_div}>
                 <button type="button" className={styles.callBtn} onClick={() => { callUser(operatorId); setCallAccepted(true)}}>
                    {/* Hang D */}
                 </button>
+              </div>:props.props?"":<div className={styles.HangUp_div}>
+                <div className="row">
+                  <h4 className={styles.title_callOperator_er} >просим подождать несколько минут все операторы заняты</h4>
+                  <h5 className={styles.title_callOperator_er} >когда появится зеленая кнопка нажмите его для осуществления видеозвонка</h5>
+                  </div>
               </div>
             )}
       </div>
