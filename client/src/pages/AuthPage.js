@@ -13,6 +13,9 @@ export const AuthPage = () => {
   const [form, setForm] = useState({
     username: '',surname: '',email: '', password: ''
   })
+  const [formL, setFormL] = useState({
+   email: '', password: ''
+  })
    const [checkbox, setcheckbox] = useState(true)
   const [tabPanes, setTabPanes] = useState({activebtn1:true,activebtn2:false});
 
@@ -35,6 +38,9 @@ export const AuthPage = () => {
   const changeHandler = event => {
     setForm({ ...form, [event.target.name]: event.target.value })
   }
+  const changeHandlerL = event => {
+    setFormL({ ...formL, [event.target.name]: event.target.value })
+  }
   const registerHandler = async () => {
     try {
       const data = await request('/api/auth/register', 'POST', {...form})
@@ -53,8 +59,8 @@ export const AuthPage = () => {
   const loginHandler = async () => {
     // console.log({...form});
     try {
-      const data = await request('/api/auth/login', 'POST', {...form})
-      auth.login(data.token, data.userId , form.email, data.username, data.surname, checkbox)
+      const data = await request('/api/auth/login', 'POST', {...formL})
+      auth.login(data.token, data.userId , data.email, data.username, data.surname, checkbox)
     } catch (e) {}
   }
   const tabPane1 = () =>{
@@ -64,7 +70,7 @@ export const AuthPage = () => {
     setTabPanes({activebtn1:false,activebtn2:true})
   }
   return (<>
-  < Header props={null} />
+  {/* < Header props={null} /> */}
     <div >
       <ToastContainer
           position="top-right"
@@ -83,8 +89,8 @@ export const AuthPage = () => {
 
          <div className={styles.tab} role="tabpanel">
             <ul className={"nav "+styles.nav_tabs} role="tablist">
-              <li role="presentation" className={tabPanes.activebtn1?styles.active:""}><button aria-controls="home" role="tab" data-toggle="tab" onClick={()=>tabPane1()}>sign in</button></li>
-              <li role="presentation" className={tabPanes.activebtn2?styles.active:""} ><button href="#Section2" aria-controls="profile" role="tab" data-toggle="tab" onClick={()=>tabPane2()}>sign up</button></li>
+              <li role="presentation" className={tabPanes.activebtn1?styles.active:""}><button aria-controls="home" role="tab" data-toggle="tab" onClick={()=>tabPane1()}>Войти в систему</button></li>
+              <li role="presentation" className={tabPanes.activebtn2?styles.active:""} ><button href="#Section2" aria-controls="profile" role="tab" data-toggle="tab" onClick={()=>tabPane2()}>Заявка на подключение</button></li>
             </ul>
             <div className={styles.tab_content+" tabs"}>{tabPanes.activebtn1?
               <div role="tabpanel" className="tab-pane" id="Section1" >
@@ -94,16 +100,16 @@ export const AuthPage = () => {
                     <input type="email" className={"form-control " + styles.form_control}                     
                         id="email"
                         name="email"
-                        value={form.email}
-                        onChange={changeHandler} />
+                        value={formL.email}
+                        onChange={changeHandlerL} />
                   </div>
                   <div className={styles.form_group+" form-group "}>
                     <label htmlFor="exampleInputPassword1">пароль</label>
                     <input type="password" className={styles.form_control+" form-control"}
                         id="password"
                         name="password"
-                        value={form.password}
-                        onChange={changeHandler} />
+                        value={formL.password}
+                        onChange={changeHandlerL} />
                   </div>
                   <div className={"form-group "+styles.form_group}>
                     <div className={" form-check "+styles.main_checkbox_+" form-check"}>
@@ -173,6 +179,17 @@ export const AuthPage = () => {
                         onChange={changeHandler}
                         />
                   </div>
+                  {/* <div className={styles.form_group+" form-group "}>
+                    <label htmlFor="exampleInputPassword1">повтор пароля</label>
+                      <input type="password"
+                        className={styles.form_control + " form-control"}
+                        placeholder="Введите пароль"
+                        id="password"
+                        name="password"
+                        value={form.password2}
+                        onChange={changeHandler}
+                        />
+                  </div> */}
                   <div className={"form-group "+styles.form_group}>
                     <div className={" form-check "+styles.main_checkbox_+" form-check"}>
                        {/* <input value="None" id="checkbox1" name="check" type="checkbox"/>

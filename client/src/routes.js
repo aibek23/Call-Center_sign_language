@@ -1,30 +1,30 @@
 import React,{useState,useEffect} from 'react'
 import {Switch, Route, Redirect} from 'react-router-dom'
 import {HomePage} from './pages/HomePage'
-import {CallsPage} from './pages/CallsPage'
 import {Call_OperatorsPage} from './pages/Call_OperatorsPage'
 import {AuthPage} from './pages/AuthPage'
-import {CallPage} from './pages/CallPage'
 import { Header } from './components/Header'
 
 export const useRoutes = (isAuthenticated) => {
   const [operator, setOperator] = useState(false);
+  console.log(operator);
   useEffect(()=>{
     const data = JSON.parse(localStorage.getItem('userData'));
+    console.log(data);
     switch (data&&data.userEmail) {
-    case "operators@gmail.com":
+    case "operator1@gmail.com":
         setOperator({'operator':1})
       break;
-    case "aibekasanakunuulu@gmail":
+    case "operator2@gmail.com":
         setOperator({'operator':2})
       break;
-    case "admin3@gmail.com":
+    case "operator3@gmail.com":
         setOperator({'operator':3})
       break;
-    case "admin4@gmail":
+    case "operator4@gmail.com":
         setOperator({'operator':4})
       break;
-    case "admin5@gmail":
+    case "operator5@gmail.com":
         setOperator({'operator':5})
       break;
     default:
@@ -36,12 +36,6 @@ export const useRoutes = (isAuthenticated) => {
       <>
       <Header props={operator} />
       <Switch>
-        <Route path="/HomePage" exact>
-          <HomePage />
-        </Route>
-        <Route path="/CallsPage" exact>
-          <CallsPage />
-        </Route>
         {operator?
         <Route path="/Call_OperatorsPage">
             <Call_OperatorsPage props={operator} />
@@ -55,17 +49,24 @@ export const useRoutes = (isAuthenticated) => {
   }
         <Redirect to="/HomePage" />
       </Switch>
+      <Route path="/HomePage" exact>
+          <HomePage />
+        </Route>
       </>
     )
   }
 
   return (
     <>
+             <Header props={operator} />
     <Switch>
-      <Route path="/" exact>
+    <Route path="/HomePage" exact>
+          <HomePage />
+        </Route>
+      <Route path="/AuthPage" exact>
         <AuthPage />
       </Route>
-      <Redirect to="/" />
+      <Redirect to="/HomePage" />
     </Switch>
     </>
   )

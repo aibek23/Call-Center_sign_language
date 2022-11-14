@@ -1,0 +1,16 @@
+.title{
+    position: absolute;
+    margin-top: 25%;
+    width: 50%;
+    color: white;
+}
+
+
+@media (max-width:763px){
+    .title{
+            position: absolute;
+            margin-top: 25%;
+            width: 100%;
+            color: white;
+    }
+}

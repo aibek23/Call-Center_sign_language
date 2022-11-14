@@ -127,7 +127,6 @@ io.on("connection", (socket) => {
 	socket.on('callEnde', (data) => {
 		io.sockets.in(data).emit("callEndeMessage", "true");
 		operators.forEach(e => {
-			log(e.operator)
 			if (e.operator == data) {
 				io.sockets.in(data).emit("callEndeMessage", "true");
 			}
@@ -157,11 +156,12 @@ io.on("connection", (socket) => {
 	socket.on("answerCall", (data) => {
 		io.to(data.to).emit("callAccepted", data.signal)
 		operators.forEach((e, i) => {
-			if (e.operator === data.to) {
+			if (e.operator === data.room) {
 				operators.splice(i, 1)
+				io.sockets.emit('online_room', (operators));
 			}
 		})
-	});	// console.log(socket.rooms,operators);
+	});
 });
 //create.channel
 // app.use(express.json({ extended: true }))

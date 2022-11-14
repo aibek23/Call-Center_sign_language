@@ -5,15 +5,39 @@ import { AuthContext } from '../context/AuthContext'
 export const Header = (props) => {
   const isAuthenticated = props.props;
   const [authenticated, setAuthenticated] = useState(false)
+  const [operator, setOperator] = useState(false);
+  const data = JSON.parse(localStorage.getItem('userData'));
   useEffect(()=>{ if (isAuthenticated !== null) {
     setAuthenticated(true)
   }},[])
+  useEffect(()=>{
+    const data = JSON.parse(localStorage.getItem('userData'));
+    console.log(data);
+    switch (data&&data.userEmail) {
+    case "operator1@gmail.com":
+        setOperator(true)
+      break;
+    case "operator2@gmail.com":
+        setOperator(true)
+      break;
+    case "operator3@gmail.com":
+        setOperator(true)
+      break;
+    case "operator4@gmail.com":
+        setOperator(true)
+      break;
+    case "operator5@gmail.com":
+        setOperator(true)
+      break;
+    default:
+      break;
+  }})
   const history = useHistory()
   const auth = useContext(AuthContext)
   const logoutHandler = event => {
     event.preventDefault()
     auth.logout()
-    history.push('/')
+    history.push('/AuthPage')
   }
   return (
     <div >
@@ -25,7 +49,7 @@ export const Header = (props) => {
           </button>
           <div className="collapse navbar-collapse" id="navbarCollapse">
             <ul className="navbar-nav me-auto mb-2 mb-md-0">
-              {authenticated ? isAuthenticated ?
+              {data ? operator ?
                 <li className="nav-item">
                   <NavLink className="nav-link" to="/Call_OperatorsPage">прием звонков</NavLink>
                 </li> :
@@ -36,7 +60,7 @@ export const Header = (props) => {
             </ul>
             <ul className='navbar-nav'>
               <li className="nav-item">
-                <a className="nav-link" href="/" onClick={logoutHandler}>выйти</a>
+                <a className="nav-link" href="/AuthPage" onClick={logoutHandler}>{data?"выйти":"вход в аккаунт"}</a>
               </li>
             </ul>
           </div>
