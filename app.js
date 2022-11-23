@@ -30,7 +30,7 @@ const saveData = async (data, username) => {
 	const dirName = new Date().toLocaleDateString().replace(/\./g, '_')
 	const dirPath = `${videoPath}/${dirName}`
 
-	const fileName = `${Date.now()}-${username}.mp4`
+	const fileName = `${Date.now()}-${username}.webm`
 	const tempFilePath = `${dirPath}/${fileName}`
 	const finalFilePath = `${dirPath}/${fileName}`
 
@@ -49,7 +49,7 @@ const saveData = async (data, username) => {
 
 	try {
 		const videoBlob = new Blob(data, {
-			type: 'video/mp4'
+			type: 'video/webm'
 		})
 		const videoBuffer = Buffer.from(await videoBlob.arrayBuffer())
 		await writeFile(tempFilePath, videoBuffer)

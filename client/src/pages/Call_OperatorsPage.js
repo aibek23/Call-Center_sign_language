@@ -13,7 +13,7 @@ import 'react-toastify/dist/ReactToastify.css'
 // import { useStopWatch } from "../hooks/StopWatch.hook";
 // import Timer from "../components/Timer";
 // import ControlButtons from "../components/ControlButtons";
-const socket = openSocket.connect('https://kosg.su', { reconnection: false })
+const socket = openSocket.connect('http://localhost:5000', { reconnection: false })
 export const Call_OperatorsPage = (props) => {
 // const {isActive,isPaused,handleStart,handlePauseResume,time} = useContext(ContextProvider)
 // const [handleStart,handlePauseResume,time] = useStopWatch()

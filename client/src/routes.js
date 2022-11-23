@@ -4,6 +4,7 @@ import {HomePage} from './pages/HomePage'
 import {Call_OperatorsPage} from './pages/Call_OperatorsPage'
 import {AuthPage} from './pages/AuthPage'
 import { Header } from './components/Header'
+import {AdminPanel} from './pages/AdminPanel'
 
 export const useRoutes = (isAuthenticated) => {
   const [operator, setOperator] = useState(false);
@@ -38,15 +39,15 @@ export const useRoutes = (isAuthenticated) => {
       <Switch>
         {operator?
         <Route path="/Call_OperatorsPage">
-            <Call_OperatorsPage props={operator} />
+          <Call_OperatorsPage props={operator} />
           </Route>:
              <Route path="/Call_OperatorsPage">
              <Call_OperatorsPage props={operator} />
            </Route>
-                //   <Route path="/CallPage" exact>
-                //   <CallPage />
-                // </Route>
-  }
+        }
+          <Route path="/AdminPanel" exact>
+           <AdminPanel />
+         </Route>
         <Redirect to="/HomePage" />
       </Switch>
       <Route path="/HomePage" exact>

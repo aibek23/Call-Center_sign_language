@@ -6,13 +6,16 @@ export const Header = (props) => {
   const isAuthenticated = props.props;
   const [authenticated, setAuthenticated] = useState(false)
   const [operator, setOperator] = useState(false);
+  const [adm, setAdm] = useState(false);
   const data = JSON.parse(localStorage.getItem('userData'));
   useEffect(()=>{ if (isAuthenticated !== null) {
     setAuthenticated(true)
   }},[])
   useEffect(()=>{
     const data = JSON.parse(localStorage.getItem('userData'));
-    console.log(data);
+    if(data&&data.userEmail==="admin@gmail.com"){
+      setAdm(true)
+    }
     switch (data&&data.userEmail) {
     case "operator1@gmail.com":
         setOperator(true)
@@ -57,6 +60,7 @@ export const Header = (props) => {
                   <NavLink className="nav-link" to="/Call_OperatorsPage">позвонить</NavLink>
                   {/* <NavLink className="nav-link" to="/CallPage">позвонить</NavLink> */}
                 </li> : ' '}
+                {adm?<NavLink className="nav-link" to="/AdminPanel">админ панель</NavLink>:""}
             </ul>
             <ul className='navbar-nav'>
               <li className="nav-item">
