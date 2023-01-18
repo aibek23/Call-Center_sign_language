@@ -54,10 +54,10 @@ export const Header = (props) => {
             <ul className="navbar-nav me-auto mb-2 mb-md-0">
               {data ? operator ?
                 <li className="nav-item">
-                  <NavLink className="nav-link" to="/Call_OperatorsPage">прием звонков</NavLink>
+                  <NavLink className="nav-link" to="/CallPage">прием звонков</NavLink>
                 </li> :
                 <li className="nav-item">
-                  <NavLink className="nav-link" to="/Call_OperatorsPage">позвонить</NavLink>
+                  <NavLink className="nav-link" to="/CallPage">позвонить</NavLink>
                   {/* <NavLink className="nav-link" to="/CallPage">позвонить</NavLink> */}
                 </li> : ' '}
                 {adm?<NavLink className="nav-link" to="/AdminPanel">админ панель</NavLink>:""}

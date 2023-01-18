@@ -1,7 +1,7 @@
 import React,{useState,useEffect} from 'react'
 import {Switch, Route, Redirect} from 'react-router-dom'
 import {HomePage} from './pages/HomePage'
-import {Call_OperatorsPage} from './pages/Call_OperatorsPage'
+import {CallPage} from './pages/CallPage'
 import {AuthPage} from './pages/AuthPage'
 import { Header } from './components/Header'
 import {AdminPanel} from './pages/AdminPanel'
@@ -29,7 +29,7 @@ export const useRoutes = (isAuthenticated) => {
       break;
     default:
       break;
-    }},[2])
+    }},[0])
 
   if (isAuthenticated) {
     return (
@@ -37,11 +37,11 @@ export const useRoutes = (isAuthenticated) => {
       <Header props={operator} />
       <Switch>
         {operator?
-        <Route path="/Call_OperatorsPage">
-          <Call_OperatorsPage props={operator} />
+        <Route path="/CallPage">
+          <CallPage props={operator} />
           </Route>:
-             <Route path="/Call_OperatorsPage">
-             <Call_OperatorsPage props={operator} />
+             <Route path="/CallPage">
+             <CallPage props={operator} />
            </Route>
         }
           <Route path="/AdminPanel" exact>

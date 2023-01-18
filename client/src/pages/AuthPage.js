@@ -2,7 +2,6 @@ import React, {useContext, useEffect, useState} from 'react'
 import {useHttp} from '../hooks/http.hook'
 import {AuthContext} from '../context/AuthContext'
 import {toast, ToastContainer} from 'react-toastify'
-import { Header } from '../components/Header'
 import 'react-toastify/dist/ReactToastify.css'
 import styles from '../css/AuthPage.module.css'
 

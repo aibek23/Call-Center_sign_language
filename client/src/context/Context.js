@@ -1,11 +1,11 @@
-import React, { createContext, useState,useContext, useEffect,useCallback } from 'react';
+import { createContext, useState,useContext, useEffect,useCallback } from 'react';
 import {useHttp} from '../hooks/http.hook'
 import {AuthContext} from '../context/AuthContext'
 const useStopWatch = () => {
   const [isActive, setIsActive] = useState(false);
   const [isPaused, setIsPaused] = useState(true);
   const [time, setTime] = useState(0);
-  const {loading, request} = useHttp()
+  const {request} = useHttp()
   const {token} = useContext(AuthContext)
   useEffect(() => {
     let interval = null;

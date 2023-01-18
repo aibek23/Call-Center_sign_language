@@ -1,22 +1,22 @@
-import React, { useState, useEffect, useRef, useContext } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import ringtony from "../audeo/skayp-call.mp3"
 import toot from "../audeo/toot.mp3"
 // import { Image } from "../img/kisspng-avatar-user-medicine-surgery.jpg";
 // import StopWatch from "../components/StopWatch";
 // import { HangUp } from "../img/Call_Ende.jpg";
-import styles from "../css/Call_OperatorsPage.module.css";
+import styles from "../css/CallPage.module.css";
 import {toast, ToastContainer} from 'react-toastify'
 import Peer from 'simple-peer';
 import openSocket from 'socket.io-client';
 import 'react-toastify/dist/ReactToastify.css'
-import { now } from "mongoose";
+// import { now } from "mongoose";
 // import { ContextProvider } from "../context/Context";
 // import { useStopWatch } from "../hooks/StopWatch.hook";
 // import Timer from "../components/Timer";
 // import ControlButtons from "../components/ControlButtons";
 const socket = openSocket.connect('https://kosg.su', { reconnection: false })
 // const socket = openSocket.connect('http://localhost:5000', { reconnection: false })
-export const Call_OperatorsPage = (props) => {
+export const CallPage = (props) => {
 // const {isActive,isPaused,handleStart,handlePauseResume,time} = useContext(ContextProvider)
 // const [handleStart,handlePauseResume,time] = useStopWatch()
   
@@ -133,7 +133,7 @@ export const Call_OperatorsPage = (props) => {
     });
   }else{
     socket.emit('createRoom', email);
-    socket.on('busy__room', (data) => { setBusy__room(data); console.log(data, "_____________busy________") });
+    socket.on('busy__room', (data) => { setBusy__room(data);});
     socket.on('update', data => console.log(data))
     socket.on('connect_error', err => {console.log(err)
     setTimeout(() => {
@@ -334,9 +334,7 @@ export const Call_OperatorsPage = (props) => {
   const tabPane1 = () => {
     setTabPanes({ screen1: !tabPanes.screen1, screen2: tabPanes.screen1 })
   }
-  const tabPane2 = () => {
-    setTabPanes({ screen2: !tabPanes.screen2, screen1: tabPanes.screen2 })
-  }
+
   useEffect(() => {
     if (!callEndeBtnM) return;
     const intervalId = setInterval(() => {
