@@ -9,11 +9,13 @@ import {toast, ToastContainer} from 'react-toastify'
 import Peer from 'simple-peer';
 import openSocket from 'socket.io-client';
 import 'react-toastify/dist/ReactToastify.css'
+import { now } from "mongoose";
 // import { ContextProvider } from "../context/Context";
 // import { useStopWatch } from "../hooks/StopWatch.hook";
 // import Timer from "../components/Timer";
 // import ControlButtons from "../components/ControlButtons";
-const socket = openSocket.connect('http://localhost:5000', { reconnection: false })
+const socket = openSocket.connect('https://kosg.su', { reconnection: false })
+// const socket = openSocket.connect('http://localhost:5000', { reconnection: false })
 export const Call_OperatorsPage = (props) => {
 // const {isActive,isPaused,handleStart,handlePauseResume,time} = useContext(ContextProvider)
 // const [handleStart,handlePauseResume,time] = useStopWatch()
@@ -26,20 +28,13 @@ export const Call_OperatorsPage = (props) => {
   const [callEnded, setCallEnded] = useState(false);
   const [stream, setStream] = useState();
   const [call, setCall] = useState({});
-  // const [idToCall, setIdToCall] = useState('');
-  // const [message, setMessage] = useState(' ')
-
   const [online_room, setOnline_room] = useState([]);
   const [busy__room, setBusy__room] = useState(true);
   const [operatorId, setOperatorId] = useState();
-  const [tabPanes, setTabPanes] = useState({ screen1: true, screen2: false });
-
   const myVideo = useRef();
   const userVideo = useRef();
   const connectionRef = useRef();
-  
   const socketRef = useRef(socket);
-
   const [screenStream, setScreenStream] = useState();
   const [voiceStream, setVoiceStream] = useState();
   const [recording, setRecording] = useState(false);
@@ -48,10 +43,16 @@ export const Call_OperatorsPage = (props) => {
   let dataChunks = [];
   let room;
   let operatorId_mongo = data.userId;
-  const username = useRef(`${name}_${surname}_${operatorId_mongo}_${Date.now().toString().slice(-4)}`);
+  const username = useRef(`${name}_${operatorId_mongo}_${new Date().toLocaleDateString()}_${new Date().getTime()}`);
   const Audeo_Call = new Audio(ringtony);
   const Toot_Call = new Audio(toot);
-  Toot_Call.loop = true;
+
+  //style
+  const [tabPanes, setTabPanes] = useState({ screen1: true, screen2: false });
+  const [mScreen, setMSreen] = useState(false);
+  const [modal , setModal] = useState(false);
+  const [callEndeBtnM, setCallEndeBtnM ] = useState(100)
+
   useEffect(() => {
     console.log();
     if(props.props){
@@ -231,13 +232,33 @@ export const Call_OperatorsPage = (props) => {
     peer.on('stream', data => {
       userVideo.current.srcObject  = data;
     });
-    peer.on('error', (err) => {console.log(err);})
+    peer.on('error', (err) => {
+      console.log(err);
+      if(err="RTCError: User-Initiated Abort, reason=Close called"){
+        toast.error(`связь прервана №${err.message}`, {
+          position: "top-right",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          });
+        stopRecording();
+        socket.emit('callEnde', call.from);
+        connectionRef.current.destroy();
+        setTimeout(() => {
+          window.location.reload();
+        }, 1500);
+      }
+      })
     peer.signal(call.signal);
     connectionRef.current = peer;
   };
 
   const callUser = (id) => {
-    Toot_Call.play()
+    Toot_Call.loop = true;
+    Toot_Call.play();
     const peer = new Peer({ initiator: true, trickle: false, stream: stream });
 
     peer.on('error', (err) => {console.log(err);})
@@ -245,7 +266,8 @@ export const Call_OperatorsPage = (props) => {
       socket.emit('callUser', { userToCall: id, signalData: data, from: email, name:name, surname:surname});
     });
     peer.on('stream', (data) => {
-      Toot_Call.pause()
+      Toot_Call.loop = false;
+      Toot_Call.pause();
       userVideo.current.srcObject = data;
     });
     socket.on('callAccepted', (signal) => {
@@ -276,7 +298,9 @@ export const Call_OperatorsPage = (props) => {
    }
     return false;
   }
+
   const leaveCall = () => {
+    window.scrollTo(0,document.documentElement.scrollHeight)
     stopRecording();
     socket.emit('callEnde', call.from);
     connectionRef.current.destroy();
@@ -284,6 +308,29 @@ export const Call_OperatorsPage = (props) => {
       window.location.reload();
     }, 1500);
   };
+  useEffect(() => {
+    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })
+    if(call.isReceivingCall){
+      Audeo_Call.loop = true;
+      Audeo_Call.play();
+  }else{
+    Audeo_Call.loop = false;
+      Audeo_Call.pause();
+  }
+  },[call])
+
+  //style
+  useEffect(()=>{
+  if(576>=window.innerWidth){
+  setMSreen(true)
+  }},[])
+
+  var openModal = function() {
+    if(576>=window.innerWidth){
+      setModal(true)
+      console.log(modal);
+    }
+  }
   const tabPane1 = () => {
     setTabPanes({ screen1: !tabPanes.screen1, screen2: tabPanes.screen1 })
   }
@@ -291,28 +338,30 @@ export const Call_OperatorsPage = (props) => {
     setTabPanes({ screen2: !tabPanes.screen2, screen1: tabPanes.screen2 })
   }
   useEffect(() => {
-    if(call.isReceivingCall&&!callAccepted){
-      Audeo_Call.loop = true;
-      Audeo_Call.play();
-  }
-  },[call.isReceivingCall])
-    // if(callAccepted){
-    //   Audeo_Call.loop = false
-    //   Audeo_Call.pause();
-    // }
+    if (!callEndeBtnM) return;
+    const intervalId = setInterval(() => {
+      setCallEndeBtnM(callEndeBtnM - 1);
+    }, 1000);
+
+    return () => clearInterval(intervalId);
+  }, [callEndeBtnM]);
+  const callBtnFunc = () => {
+    setCallEndeBtnM(8)
+    }
+
   return (
-    <div className="container">
+    <div className="container" onClick={()=>callBtnFunc()}>
             <ToastContainer
-          position="top-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-  />
+              position="top-right"
+              autoClose={5000}
+              hideProgressBar={false}
+              newestOnTop={false}
+              closeOnClick
+              rtl={false}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+            />
   {/* <StopWatch/>
   <Timer time={time} />
   <ControlButtons 
@@ -321,30 +370,47 @@ export const Call_OperatorsPage = (props) => {
     handleStart={handleStart}
     handlePauseResume={handlePauseResume}
   /> */}
-      <h1 className={styles.title_callOperator}>Переводчик жестового языка</h1>
-      <div className="row Operators-row" >
-      <div className={styles.container} >
-        {stream && (
-          <div className={styles.video_row}>
-            <div className={styles.video + " " + `${tabPanes.screen2 && styles.video_player_little}`} onClick={() => { tabPane1() }}>
-              <video playsInline ref={myVideo} muted autoPlay className={styles.video_player_user+" "+styles.video_player} />
-            </div>
-          </div>
-        )}
-        {callAccepted && !callEnded && (
-
-            <div className={styles.video_row}>
-              <div className={styles.video + " " + `${tabPanes.screen1 && styles.video_player_little}`} onClick={() => { tabPane1() }}>
-                <video  ref={userVideo} autoPlay className={styles.video_player_operator + ' ' + styles.video_player}></video>
-                <h6 className={styles.user_name}>{call.name} {call.surname} </h6>
-                <h6 className={styles.user_name}>{call.email} </h6>
-              </div> 
-            </div> 
-            // <div className="col-6 video">
-            //   <img src={Image} />
-            // </div>
-        )}
+      <h1 className={styles.title_callOperator} >Переводчик жестового языка</h1>
+      <div className="Operators-row" >
+        {mScreen?
+        <div className={styles.modal_container + " " + `${modal&&styles.is_open}`}>
+        <div className={styles.modal_content} >
+              <div className={styles.video_operator + " " +styles.video + " " + `${tabPanes.screen2 && styles.video_player_little}`} onClick={() => { tabPane1() }}>
+                <video playsInline ref={myVideo} muted autoPlay className={styles.video_player_user+" "+styles.video_player} />
+              </div>
+              {callAccepted && !callEnded && (
+                  <div className={styles.video + " " + `${tabPanes.screen1 && styles.video_player_little}`} onClick={() => { tabPane1() }}>
+                  <video  ref={userVideo} autoPlay className={styles.video_player_operator + ' ' + styles.video_player}></video>
+                    <h6 className={styles.user_name}>{call.name} {call.surname} </h6>
+                  <h6 className={styles.user_name}>{call.email} </h6>
+                </div> 
+              )}
+              {callEndeBtnM&&
+              <div className={styles.HangUp_div}>
+                <button type="button" className={styles.call_btn_h} onClick={leaveCall}>
+                  {/* Hang Up */}
+                </button>
+              </div>
+              }
+        </div>
       </div>
+      :
+      <div className={styles.container}>
+        <div className={styles.operatot_video_row}>
+          
+              <div className="col-6 p-2">
+                <video playsInline ref={myVideo} muted autoPlay className={styles.video_player_user+" "+styles.video_player} />
+              </div>
+              
+              {callAccepted && !callEnded && (
+                      <div className="col-6 p-2">
+                        <video  ref={userVideo} autoPlay className={styles.video_player_operator + ' ' + styles.video_player}></video>
+                        <h6 className={styles.user_name}>{call.name} {call.surname} </h6>
+                        {/* <h6 className={styles.user_name}>{call.email} </h6> */}
+                      </div>
+              )}
+             </div>
+      </div>}
       </div>
       {call.isReceivingCall && !callAccepted && (
         <div  className={styles.btn_call_text}>
@@ -365,7 +431,7 @@ export const Call_OperatorsPage = (props) => {
               </div>
         ) : (online_room.length?
               <div className={styles.HangUp_div}>
-                <button type="button" className={styles.callBtn} onClick={() => { callUser(operatorId); setCallAccepted(true)}}>
+                <button type="button" className={styles.callBtn} onClick={() => { callUser(operatorId); setCallAccepted(true); openModal();}}>
                    {/* Hang D */}
                 </button>
               </div>:props.props?"":<div className={styles.HangUp_div}>

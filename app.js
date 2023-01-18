@@ -27,10 +27,10 @@ ffmpeg.setFfmpegPath(path)
 const saveData = async (data, username) => {
 	const videoPath = __dirname + '/video'
 
-	const dirName = new Date().toLocaleDateString().replace(/\./g, '_')
+	const dirName = new Date().toLocaleDateString().replace(/\./g, '-')
 	const dirPath = `${videoPath}/${dirName}`
 
-	const fileName = `${Date.now()}-${username}.webm`
+	const fileName = `${username}.webm`
 	const tempFilePath = `${dirPath}/${fileName}`
 	const finalFilePath = `${dirPath}/${fileName}`
 
@@ -138,7 +138,7 @@ io.on("connection", (socket) => {
 		}
 	})
 	socket.on("disconnect", () => {
-		// socket.broadcast.emit("callEnded");
+		socket.broadcast.emit("callEnded");
 		operators.forEach((e, i) => {
 			if (e.id == socket.id) {
 				operators.splice(i, 1)

@@ -26,6 +26,8 @@
     flex-direction: column;
   }
 .video{
+   height: auto; 
+   display: block;
   padding: 5px;
   background-color:rgb(255, 255, 255);
 
@@ -34,19 +36,28 @@
   display: block;
   width: 100%;
   border-bottom:12px;
-  /* max-width: 450px; */
+  max-width: 450px;
 }
 .user_name{
+  text-align: end;
   margin-top:5px;
   margin-bottom: 0;
 }
 
 .HangUp_div{
     width: 100%;
-    /* position: relative; */
+    position: relative;
     display: flex;
     flex-direction: row;
    justify-content: center
+}
+
+
+.operatot_video_row{
+  display: flex;
+  background-color: white;
+  height: 350px;
+  overflow:inherit;
 }
 /* .wraper_callBtn{
   display: flex;
@@ -55,18 +66,17 @@ justify-content: center;
 
 
 .call_btn_h{
-
-  position: fixed;
+  position: absolute;
   border: none;
-  width: 95px;
-  height: 95px;
-  border-radius: 30%;;
   background-image:url(../img/Call_Ende.jpg);
-  background-size: 120px;
   background-clip: border-box;
   /* top:-50px; */
+  width: 60px;
+  height: 60px;
+  border-radius: 30%;;
+  background-size: 80px;
   background-position: -12px -12px; 
-  bottom: 30px;
+  bottom: -15px;
 }
 .callBtn{
 position: fixed;
@@ -152,6 +162,22 @@ bottom: 30px;
      background-position: center;
     background-size: 100px 100px;
 }
+.video_operator{
+  background-color: rgb(171, 26, 26);
+    background-image:url(../img/png-clipart-customer-service-call-centre.png.gif);
+     background-clip: border-box;
+     background-repeat: no-repeat;
+     background-position: center;
+    background-size: 100px 100px;
+}
+.video_player_user{
+  background-color: white;
+    background-image:url(../img/kisspng-avatar-user-medicine-surgery.jpg);
+     background-clip: border-box;
+     background-repeat: no-repeat;
+     background-position: center;
+    background-size: 100px 100px;
+}
 .video_player_little{
   position: absolute;
   bottom: 20px;
@@ -162,6 +188,50 @@ bottom: 30px;
 }
 .video_player_little video{
   background-size: 50px 50px;
+}
+
+.modal_container {
+	pointer-events: none; 
+  opacity: 0;
+	position: absolute;
+  z-index: -1;
+	left: 0;
+	top: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0);
+  transition: opacity .3s, background-color .5s;
+}
+
+.is_open {
+  scroll-behavior: inherit;
+	opacity: 1;
+	pointer-events: all;
+  z-index: 100;
+	background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal_content {
+	overflow: auto;
+	width: 100%; 
+  height: 100%; 
+	padding: 15px;
+  background-color: rgb(53, 53, 53);
+  border-radius: 3px;
+}
+
+.close {
+	position: absolute;
+	right: 0;
+	top: 0;
+	width: 30px;
+	height: 30px;
+  background-color: #fff;
+  border: solid 1px #222;
+  border-radius: 3px;
 }
 .btn_call__ico {
   display: flex;
@@ -199,11 +269,28 @@ bottom: 30px;
 } */
 .video_player_little{
   position: fixed;
-  bottom: 20%;
+  bottom: 13%;
   z-index: 1500;
   border: none;
  width:200px;
  right: 12px;
+}
+.call_btn_h{
+  position: fixed;
+  width: 60px;
+  height: 60px;
+  border-radius: 30%;;
+  background-size: 80px;
+  background-position: -12px -12px; 
+  bottom: 30px;
+}
+.callBtn{
+  width: 60px;
+  height: 60px;
+  border-radius: 30%;;
+  background-size: 80px;
+  background-position: -12px -12px; 
+  bottom: 30px;
 }
 
 }

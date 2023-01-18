@@ -8,7 +8,6 @@ import {AdminPanel} from './pages/AdminPanel'
 
 export const useRoutes = (isAuthenticated) => {
   const [operator, setOperator] = useState(false);
-  console.log(operator);
   useEffect(()=>{
     const data = JSON.parse(localStorage.getItem('userData'));
     console.log(data);
