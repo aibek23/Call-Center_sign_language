@@ -2,20 +2,18 @@ import React from "react";
 // import "./Timer.css";
 
 export default function Timer(props) {
-return (
-	<div className="timer">
-			<span className="digits">
-		{("0" + Math.floor((props.time / 360000) ))}:
-	</span>
-	<span className="digits">
-		{("0" + Math.floor((props.time / 60000) % 60)).slice(-2)}:
-	</span>
-	<span className="digits">
-		{("0" + Math.floor((props.time / 1000) % 60)).slice(-2)}.
-	</span>
-	<span className="digits mili-sec">
-		{("0" + ((props.time / 10) % 100)).slice(-2)}
-	</span>
-	</div>
-);
+
+	if (!props.props) {
+		return `0h:0m:0s`
+	}
+
+	var seconds = parseInt(props.props, 10); // don't forget the second param
+    var hours   = Math.floor(seconds / 3600);
+    var minutes = Math.floor((seconds - (hours * 3600)) / 60);
+    seconds = seconds - (hours * 3600) - (minutes * 60);
+
+    if (hours   < 10) {hours   = "0"+hours;}
+    if (minutes < 10) {minutes = "0"+minutes;}
+    if (seconds < 10) {seconds = "0"+seconds;}
+	return `${hours}h:${minutes}m:${seconds}s`
 }

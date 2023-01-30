@@ -5,7 +5,6 @@ const config = require('config')
 const path = require('path')
 const mongoose = require('mongoose')
 const server = require("http").createServer(app)
-const serverS = require("https").createServer(httpsOptions, app);
 const cors = require("cors");
 const User = require('./models/User')
 const { log } = require('console')
@@ -19,10 +18,7 @@ const { join, dirname } = require('path')
 const { fileURLToPath } = require('url')
 const { hostname } = require('node:os')
 
-var httpsOptions = {
-    key: fs.readFileSync(`${__dirname}/kosg.su/privkey.pem`),
-    cert: fs.readFileSync(`${__dirname}/kosg.su/cert.pem`)
-};
+
 ffmpeg.setFfmpegPath(path)
 const saveData = async (data, username) => {
 	const videoPath = __dirname + '/video'
@@ -72,6 +68,7 @@ const saveData = async (data, username) => {
 
 app.use(express.json({ extended: true }))
 app.use('/api/auth', require('./routes/auth.routes'))
+app.use('/api/time', require('./routes/time.routes'))
 if(process.env.NODE_ENV === 'production'){
 	app.use('/',express.static(path.join(__dirname,'client','build')))
 	app.get('*',(req,res)=>{
@@ -90,6 +87,7 @@ app.get('/', (req, res) => {
 	res.send('Running');
 });
 var operators = [];
+var recording = [];
 const dataChunks = {};
 const socketByUser = {};
 
@@ -110,6 +108,19 @@ io.on("connection", (socket) => {
 	}
 	);
 	socket.on('screenData:start', ({ data, username }) => {
+		// if(recording[0]){
+		// 	console.log("recor");
+		// 	operators.push({username});
+		// }else{
+
+		// }
+		// recording.forEach((e) => {
+		// 	if (e.username !== username) {
+		// 		console.log("recor");
+		// 		operators.push({username});
+		// 		io.sockets.emit('recording', (recording));
+		// 	}
+		// })
 		if (dataChunks[username]) {
 			dataChunks[username].push(data)
 		} else {
@@ -118,12 +129,17 @@ io.on("connection", (socket) => {
 	})
 
 	socket.on('screenData:end', (username) => {
+		// recording.forEach((e,i) => {
+		// 	if (e.username == username) {
+		// 		operators.splice(i, 1);
+		// 		io.sockets.emit('recording', (recording));
+		// 	}
+		// })
 		if (dataChunks[username] && dataChunks[username].length) {
 			saveData(dataChunks[username], username)
 			dataChunks[username] = []
 		}
 	})
-
 	socket.on('callEnde', (data) => {
 		io.sockets.in(data).emit("callEndeMessage", "true");
 		operators.forEach(e => {
@@ -138,10 +154,11 @@ io.on("connection", (socket) => {
 		}
 	})
 	socket.on("disconnect", () => {
-		socket.broadcast.emit("callEnded");
+		// socket.broadcast.emit("callEnded");
 		operators.forEach((e, i) => {
 			if (e.id == socket.id) {
-				operators.splice(i, 1)
+				operators.splice(i, 1);
+				io.sockets.emit('online_room', (operators));
 			}
 		})
 		const username = socketByUser[socket.id]

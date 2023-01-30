@@ -11,14 +11,13 @@ import openSocket from 'socket.io-client';
 import 'react-toastify/dist/ReactToastify.css'
 // import { now } from "mongoose";
 // import { ContextProvider } from "../context/Context";
-// import { useStopWatch } from "../hooks/StopWatch.hook";
-// import Timer from "../components/Timer";
+import { useStopWatch } from "../hooks/StopWatch.hook";
+import Timer from "../components/Timer";
 // import ControlButtons from "../components/ControlButtons";
-const socket = openSocket.connect('https://kosg.su', { reconnection: false })
-// const socket = openSocket.connect('http://localhost:5000', { reconnection: false })
+// const socket = openSocket.connect('https://kosg.su', { reconnection: false })
+const socket = openSocket.connect('http://localhost:5000', { reconnection: false })
 export const CallPage = (props) => {
-// const {isActive,isPaused,handleStart,handlePauseResume,time} = useContext(ContextProvider)
-// const [handleStart,handlePauseResume,time] = useStopWatch()
+const {handleStart,handlePauseResume,time} = useStopWatch(0)
   
   const data = JSON.parse(localStorage.getItem('userData'));
   const name = data.username;
@@ -108,7 +107,7 @@ export const CallPage = (props) => {
     //   console.log(err)
     //   stopRecording();
     //   // setTimeout(() => {
-    //   //   window.location.reload();
+    //   //   window.location.reload();;
     //   // }, 1500);
     // })
     socket.on('callEndeMessage',(data)=>{
@@ -140,7 +139,8 @@ export const CallPage = (props) => {
       window.location.reload(); 
     }, 3000);
     })
-    socket.on('disconnect', () => { window.location.reload(); })
+    socket.on('disconnect', () => { window.location.reload(); 
+    })
     socket.on('connect_failed', err => console.log(err))
     socket.on('callEndeMessage', () => {
       window.location.reload();
@@ -192,7 +192,8 @@ export const CallPage = (props) => {
   },[online_room])
   function startRecording() {
     if (screenStream && voiceStream && !mediaRecorder) {
-      setRecording(true)
+      setRecording(true);
+      handleStart();
       let mediaStream
       if (voiceStream === 'unavailable') {
         mediaStream = screenStream
@@ -215,13 +216,14 @@ export const CallPage = (props) => {
     }
   }
   function stopRecording() {
+    handlePauseResume();
     setRecording(false)
     socketRef.current.emit('screenData:end', username.current)
     mediaRecorder = null
     dataChunks = []
   }
   const answerCall = () => {
-    startRecording()
+    startRecording();
     setCallAccepted(true);
     Audeo_Call.loop = false;
     Audeo_Call.pause();
@@ -320,6 +322,7 @@ export const CallPage = (props) => {
   },[call])
 
   //style
+
   useEffect(()=>{
   if(576>=window.innerWidth){
   setMSreen(true)
@@ -360,14 +363,6 @@ export const CallPage = (props) => {
               draggable
               pauseOnHover
             />
-  {/* <StopWatch/>
-  <Timer time={time} />
-  <ControlButtons 
-    active={isActive}
-    isPaused={isPaused}
-    handleStart={handleStart}
-    handlePauseResume={handlePauseResume}
-  /> */}
       <h1 className={styles.title_callOperator} >Переводчик жестового языка</h1>
       <div className="Operators-row" >
         {mScreen?
@@ -440,9 +435,7 @@ export const CallPage = (props) => {
               </div>
             )}
       </div>
-      {/* <button onClick={onClick} >
-        {!recording ? 'Start' : 'Stop'}
-      </button> */}
+      <Timer props={time}/>
     </div>
   )
 }

@@ -65,7 +65,7 @@ router.post(
       })
     }
 
-    const {email, password} = req.body
+    const {email, password} = req.body;
 
     const user = await User.findOne({ email })
 
@@ -82,7 +82,7 @@ router.post(
     const token = jwt.sign(
       { userId: user.id },
       config.get('jwtSecret'),
-      { expiresIn: '1h' }
+      { expiresIn: '8760h' }
     )
 
     res.json({ token, userId: user.id,  email: user.email, username: user.username, surname: user.surname})

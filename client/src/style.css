@@ -167,6 +167,8 @@ a:hover,a:focus{
  text-transform: capitalize;
  transition: all 0.3s ease 0s;
 }
+
+
 .form-horizontal .forgot-pass .btn:hover{ color: #eec111; }
 @media only screen and (max-width: 479px){
  .tab{ padding: 40px 20px; }

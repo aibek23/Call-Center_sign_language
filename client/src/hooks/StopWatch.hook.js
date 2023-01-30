@@ -1,16 +1,20 @@
-import {useState, useEffect } from 'react';
-export  const useStopWatch = () => {
+import {useState, useEffect ,useContext } from 'react';
+import {toast} from 'react-toastify'
+import {AuthContext} from '../context/AuthContext'
+import { useHttp } from './http.hook';
+export  const useStopWatch = (initialState = 0) => {
+    const {request, error, clearError} = useHttp();
+    const auth = useContext(AuthContext)
     const [isActive, setIsActive] = useState(false);
     const [isPaused, setIsPaused] = useState(true);
-    const [time, setTime] = useState(0);
+    const [time, setTime] = useState(initialState);
     
     useEffect(() => {
       let interval = null;
-    
       if (isActive && isPaused === false) {
         interval = setInterval(() => {
-          setTime((time) => time + 10);
-        }, 10);
+          setTime((time) => time + 1);
+        }, 1000);
       } else {
         clearInterval(interval);
       }
@@ -18,17 +22,38 @@ export  const useStopWatch = () => {
         clearInterval(interval);
       };
     }, [isActive, isPaused]);
+
+    useEffect(() => {
+      error&&toast.error(`${error}`, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        });
+      clearError()
+    }, [error, clearError])
     
     const handleStart = () => {
       setIsActive(true);
       setIsPaused(false);
     };
     
-    const handlePauseResume = () => {
+    const handlePauseResume = async () => {
       setIsPaused(!isPaused);
+      try {
+
+        const data = await request('/api/time/save', 'POST', {duration: time}, {
+          Authorization: `Bearer ${auth.token}`
+        })
+      } catch (e) {console.log(e)}
     };
     
   return {
     handleStart,handlePauseResume,time
 };
 };
+
+export default useStopWatch;
