@@ -1,0 +1,11 @@
+./pages/AdminPanel.js
+const socket = openSocket.connect('http://localhost:5000', { reconnection: false })
+const socket = openSocket.connect('https://kosg.su', { reconnection: false })
+
+./pages/callPage.js
+const socket = openSocket.connect('http://localhost:5000', { reconnection: false })
+const socket = openSocket.connect('https://kosg.su', { reconnection: false })
+
+./components/LinksList.js
+ <a href={`http://localhost:5000/static/${element.videoName}.webm`}>Открыть</a>
+  <a href={`https://kosg.su/static/${element.videoName}.webm`}>Открыть</a>

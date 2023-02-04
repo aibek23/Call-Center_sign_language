@@ -37,23 +37,23 @@ export const useRoutes = (isAuthenticated) => {
       <>
       <Header props={operator} />
       <Switch>
-        {operator?
-        <Route path="/CallPage">
-          <CallPage props={operator} />
+          {operator?
+          <Route path="/CallPage">
+            <CallPage props={operator} />
           </Route>:
-             <Route path="/CallPage">
-             <CallPage props={operator} />
-           </Route>
-        }
+          <Route path="/CallPage">
+            <CallPage props={operator} />
+          </Route>
+          }
           <Route path="/AdminPanel" exact>
-           <AdminPanel />
-         </Route>
-         <Route path="/VideoPage:id" exact>
-           <VideoPage />
-         </Route>
-        <Redirect to="/HomePage" />
-      </Switch>
-      <Route path="/HomePage" exact>
+            <AdminPanel />
+          </Route>
+          <Route path="/detailVideo/:id" >
+            <VideoPage />
+          </Route>
+          <Redirect to="/HomePage" />
+        </Switch>
+        <Route path="/HomePage" exact>
           <HomePage />
         </Route>
       </>
@@ -62,16 +62,16 @@ export const useRoutes = (isAuthenticated) => {
 
   return (
     <>
-             <Header props={operator} />
-    <Switch>
-    <Route path="/HomePage" exact>
+      <Header props={operator} />
+      <Switch>
+        <Route path="/HomePage" exact>
           <HomePage />
-        </Route>
-      <Route path="/AuthPage" exact>
-        <AuthPage />
-      </Route>
-      <Redirect to="/HomePage" />
-    </Switch>
+          </Route>
+        <Route path="/AuthPage" exact>
+          <AuthPage />
+          </Route>
+        <Redirect to="/HomePage" />
+      </Switch>
     </>
   )
 }

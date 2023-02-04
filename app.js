@@ -69,6 +69,7 @@ const saveData = async (data, username) => {
 app.use(express.json({ extended: true }))
 app.use('/api/auth', require('./routes/auth.routes'))
 app.use('/api/time', require('./routes/time.routes'))
+app.use('/api/video', require('./routes/video.sream.routes'))
 app.use('/static', express.static(path.join(__dirname, 'video')))
 if(process.env.NODE_ENV === 'production'){
 	app.use('/',express.static(path.join(__dirname,'client','build')))
@@ -148,7 +149,6 @@ io.on("connection", (socket) => {
 				io.sockets.in(data).emit("callEndeMessage", "true");
 			}
 		})
-		console.log(data);
 		if (dataChunks[data] && dataChunks[data].length) {
 			saveData(dataChunks[data], data)
 			dataChunks[data] = []

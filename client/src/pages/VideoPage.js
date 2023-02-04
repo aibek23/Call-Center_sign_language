@@ -1,11 +1,13 @@
 import React, {useCallback, useContext, useEffect, useState} from 'react'
+import {useParams} from 'react-router-dom'
 import {useHttp} from '../hooks/http.hook'
 import {Context} from '../context/Context'
 import {Loader} from '../components/Loader'
-import { VideoCard } from '../components/VideoCard'
+// import { VideoCard } from '../components/VideoCard'
+import { LinksList } from '../components/LinksList'
 
 export const VideoPage = () => {
-  const operatorRoomId = 1
+  const operatorRoomId = useParams().id
   const [videoPath, setVideoPath] = useState([])
   const {loading, request} = useHttp()
   const {token} = useContext(Context)
@@ -16,7 +18,7 @@ export const VideoPage = () => {
         Authorization: `Bearer ${token}`
       })
       setVideoPath(fetched)
-    } catch (e) {}
+    } catch (e) {console.log(e)}
   }, [token, request])
 
   useEffect(() => {
@@ -26,19 +28,20 @@ export const VideoPage = () => {
   if (loading) {
     return <Loader/>
   }
+  console.log(videoPath);
+
 
   return (
     <>
-      <div className="input-group">
-          <div className="form-outline">
-              <input type="search" id="form1" className="form-control" />
-              <label className="form-label" for="form1">Search</label>
-          </div>
-          <button type="button" className="btn btn-primary">
-              <i className="fas fa-search"></i>
-          </button>
-      </div>
-      {!loading && <VideoCard  />}
+
+
+      <div class="container">
+ 
+        <input class="form-control mb-4 mt-4" id="tableSearch" type="text"
+            placeholder="Type something to search list items" />
+
+        {!loading && <LinksList links={videoPath}  />}
+        </div>
     </>
   )
 }
