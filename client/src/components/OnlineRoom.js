@@ -1,7 +1,7 @@
 import React,{useState, useEffect ,useContext } from 'react';
 import {toast} from 'react-toastify';
 import openSocket from 'socket.io-client';
-import {AuthContext} from '../context/AuthContext'
+import {Context} from '../context/Context'
 import { useHttp } from '../hooks/http.hook';
 
 const socket = openSocket.connect('http://localhost:5000', { reconnection: false })

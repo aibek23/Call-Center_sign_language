@@ -1,7 +1,7 @@
 
 import React, { createContext, useState,useContext, useEffect,useCallback } from 'react';
 import {useHttp} from '../hooks/http.hook'
-import {AuthContext} from '../context/AuthContext'
+import {Context} from '../context/Context'
 // import "./StopWatch.css";
 import Timer from "./Timer";
 import ControlButtons from "./ControlButtons";
@@ -11,7 +11,7 @@ function StopWatch(props) {
   const [isPaused, setIsPaused] = useState(true);
   const [time, setTime] = useState(1515);
   const {loading, request} = useHttp()
-  const {token} = useContext(AuthContext)
+  const {token} = useContext(Context)
   useEffect(() => {
     let interval = null;
   

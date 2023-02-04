@@ -5,6 +5,7 @@ import {CallPage} from './pages/CallPage'
 import {AuthPage} from './pages/AuthPage'
 import { Header } from './components/Header'
 import {AdminPanel} from './pages/AdminPanel'
+import { VideoPage } from './pages/VideoPage'
 
 export const useRoutes = (isAuthenticated) => {
   const [operator, setOperator] = useState(false);
@@ -46,6 +47,9 @@ export const useRoutes = (isAuthenticated) => {
         }
           <Route path="/AdminPanel" exact>
            <AdminPanel />
+         </Route>
+         <Route path="/VideoPage:id" exact>
+           <VideoPage />
          </Route>
         <Redirect to="/HomePage" />
       </Switch>

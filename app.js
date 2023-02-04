@@ -1,31 +1,30 @@
-const { Blob, Buffer } = require('node:buffer')
-const express = require('express')
-const app = express()
-const config = require('config')
-const path = require('path')
-const mongoose = require('mongoose')
-const server = require("http").createServer(app)
+const { Blob, Buffer } = require('node:buffer');
+const express = require('express');
+const app = express();
+const config = require('config');
+const path = require('path');
+const mongoose = require('mongoose');
+const server = require("http").createServer(app);
 const cors = require("cors");
-const User = require('./models/User')
-const { log } = require('console')
+const User = require('./models/User');
+const { log } = require('console');
 var os = require("os");
-const ffmpeg = require('fluent-ffmpeg')
+const ffmpeg = require('fluent-ffmpeg');
 const assert = require('assert');
 const fs = require('fs');
-const { mkdir, open, unlink, writeFile } = require('fs/promises')
+const { mkdir, open, unlink, writeFile } = require('fs/promises');
 const MongoGridFS = require('mongo-gridfs');
-const { join, dirname } = require('path')
-const { fileURLToPath } = require('url')
-const { hostname } = require('node:os')
+const { join, dirname } = require('path');
+const { fileURLToPath } = require('url');
+const { hostname } = require('node:os');
 
 
 ffmpeg.setFfmpegPath(path)
 const saveData = async (data, username) => {
 	const videoPath = __dirname + '/video'
 
-	const dirName = new Date().toLocaleDateString().replace(/\./g, '-')
-	const dirPath = `${videoPath}/${dirName}`
-
+	// const dirName = new Date().toLocaleDateString().replace(/\./g, '')
+	const dirPath = `${videoPath}`
 	const fileName = `${username}.webm`
 	const tempFilePath = `${dirPath}/${fileName}`
 	const finalFilePath = `${dirPath}/${fileName}`
@@ -55,8 +54,9 @@ const saveData = async (data, username) => {
 				'-c:a copy',
 				'-crf 35',
 				'-b:v 0',
-				'-vf scale=1280:720'
+				'-vf scale=1280:720',
 			])
+
 			.on('end', async () => {
 				await unlink(tempFilePath)
 			})
@@ -69,6 +69,7 @@ const saveData = async (data, username) => {
 app.use(express.json({ extended: true }))
 app.use('/api/auth', require('./routes/auth.routes'))
 app.use('/api/time', require('./routes/time.routes'))
+app.use('/static', express.static(path.join(__dirname, 'video')))
 if(process.env.NODE_ENV === 'production'){
 	app.use('/',express.static(path.join(__dirname,'client','build')))
 	app.get('*',(req,res)=>{
@@ -180,12 +181,6 @@ io.on("connection", (socket) => {
 		})
 	});
 });
-//create.channel
-// app.use(express.json({ extended: true }))
-
-// app.use('/api/auth', require('./routes/auth.routes'))
-// app.use('/t', require('./routes/redirect.routes'))
-
 
 if (process.env.NODE_ENV === 'production') {
 	app.use('/', express.static(path.join(__dirname, 'client', 'build')))

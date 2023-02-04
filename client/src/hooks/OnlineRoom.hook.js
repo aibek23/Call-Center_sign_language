@@ -1,22 +1,25 @@
 import {useState, useEffect ,useContext ,useCallback} from 'react';
 import openSocket from 'socket.io-client';
 import {toast} from 'react-toastify'
-import {AuthContext} from '../context/AuthContext'
+import {Context} from '../context/Context'
 import { useHttp } from './http.hook';
 
 
-const socket = openSocket.connect('http://localhost:5000', { reconnection: false })
-export  const useStopWatch = (initialState ) => {
-    const {request, error, clearError} = useHttp();
-    const auth = useContext(AuthContext)
+const socket = openSocket.connect('http://localhost:5000/', { reconnection: false })
+export  const useOnlineRoom = (initialState ) => {
+    const auth = useContext(Context);
+    const {request} = useHttp();
     const [isActive, setIsActive] = useState("не в сети");
     const [time, setTime] = useState(false);
-    const [room, setRoom] = useState(initialState);
     const [online_room, setOnline_room] = useState([]);
+    const data = JSON.parse(localStorage.getItem('userData'));
+    const email = data.userEmail;
+    useEffect(()=>{
+        socket.emit('createRoom', email);
         socket.on('online_room', (data) => {
-            setOnline_room(data);
-          })
-
+          setOnline_room(data);
+     })
+    },[])
     useEffect(() => {
 
         if(online_room.length==0){
@@ -25,7 +28,7 @@ export  const useStopWatch = (initialState ) => {
             let online = online_room
             for (let index = 0; index < online.length; index++) {
                 const element = online[index];
-                if (element.operator === `room${room}`) {
+                if (element.operator === `room${initialState}`) {
                     setIsActive("online")
                 }
             }
@@ -38,7 +41,7 @@ export  const useStopWatch = (initialState ) => {
 
           const fetchLinks = useCallback(async () => {
             try {
-              const fetched = await request(`/api/time/${room}`, 'GET', null, {
+              const fetched = await request(`/api/time/${initialState}`, 'GET', null, {
                 Authorization: `Bearer ${auth.token}`
               })
               setTime(fetched)
@@ -54,12 +57,14 @@ export  const useStopWatch = (initialState ) => {
           }, [auth.token, request])
         
           useEffect(() => {
-            fetchLinks()
+            if (initialState) {
+              fetchLinks()
+            }
           }, [fetchLinks])
 
   return {
-    isActive,time
+    isActive, time, online_room, setOnline_room
 };
 };
 
-export default useStopWatch;
+export default useOnlineRoom;

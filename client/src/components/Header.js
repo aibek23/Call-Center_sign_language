@@ -1,6 +1,6 @@
 import React, { useContext, useState,useEffect } from 'react'
 import { NavLink, useHistory } from 'react-router-dom'
-import { AuthContext } from '../context/AuthContext'
+import { Context } from '../context/Context'
 
 export const Header = (props) => {
   const isAuthenticated = props.props;
@@ -36,7 +36,7 @@ export const Header = (props) => {
       break;
   }})
   const history = useHistory()
-  const auth = useContext(AuthContext)
+  const auth = useContext(Context)
   const logoutHandler = event => {
     event.preventDefault()
     auth.logout()

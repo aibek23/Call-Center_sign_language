@@ -1,12 +1,12 @@
 import React, {useContext, useEffect, useState} from 'react'
 import {useHttp} from '../hooks/http.hook'
-import {AuthContext} from '../context/AuthContext'
+import {Context} from '../context/Context'
 import {toast, ToastContainer} from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import styles from '../css/AuthPage.module.css'
 
 export const AuthPage = () => {
-  const auth = useContext(AuthContext)
+  const auth = useContext(Context)
   const {loading, request, error, clearError} = useHttp()
   // const [errorMessage, useerrorMessage] = useState(" ")
   const [form, setForm] = useState({

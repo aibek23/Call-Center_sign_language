@@ -1,10 +1,10 @@
 import {useState, useEffect ,useContext } from 'react';
 import {toast} from 'react-toastify'
-import {AuthContext} from '../context/AuthContext'
+import {Context} from '../context/Context'
 import { useHttp } from './http.hook';
 export  const useStopWatch = (initialState = 0) => {
     const {request, error, clearError} = useHttp();
-    const auth = useContext(AuthContext)
+    const auth = useContext(Context)
     const [isActive, setIsActive] = useState(false);
     const [isPaused, setIsPaused] = useState(true);
     const [time, setTime] = useState(initialState);
@@ -41,11 +41,11 @@ export  const useStopWatch = (initialState = 0) => {
       setIsPaused(false);
     };
     
-    const handlePauseResume = async () => {
+    const handlePauseResume = async (username , call) => {
       setIsPaused(!isPaused);
       try {
 
-        const data = await request('/api/time/save', 'POST', {duration: time}, {
+        const data = await request('/api/time/save', 'POST', {duration: time, videoName: username , callFrom:call}, {
           Authorization: `Bearer ${auth.token}`
         })
       } catch (e) {console.log(e)}

@@ -9,15 +9,15 @@ import {toast, ToastContainer} from 'react-toastify'
 import Peer from 'simple-peer';
 import openSocket from 'socket.io-client';
 import 'react-toastify/dist/ReactToastify.css'
-// import { now } from "mongoose";
-// import { ContextProvider } from "../context/Context";
-import { useStopWatch } from "../hooks/StopWatch.hook";
+
+import useStopWatch  from "../hooks/StopWatch.hook";
 import Timer from "../components/Timer";
+import { useRandomString } from "../hooks/random.string.hook";
 // import ControlButtons from "../components/ControlButtons";
 // const socket = openSocket.connect('https://kosg.su', { reconnection: false })
 const socket = openSocket.connect('http://localhost:5000', { reconnection: false })
 export const CallPage = (props) => {
-const {handleStart,handlePauseResume,time} = useStopWatch(0)
+const {handleStart,handlePauseResume,time} = useStopWatch(0);
   
   const data = JSON.parse(localStorage.getItem('userData'));
   const name = data.username;
@@ -42,7 +42,7 @@ const {handleStart,handlePauseResume,time} = useStopWatch(0)
   let dataChunks = [];
   let room;
   let operatorId_mongo = data.userId;
-  const username = useRef(`${name}_${operatorId_mongo}_${new Date().toLocaleDateString()}_${new Date().getTime()}`);
+  const username = useRef(`${name}_${operatorId_mongo}_${new Date().toLocaleDateString().replace(/\./g, '')}_${new Date().toLocaleTimeString().replace(/\:/g, '')}_${useRandomString(8)}`);
   const Audeo_Call = new Audio(ringtony);
   const Toot_Call = new Audio(toot);
 
@@ -53,7 +53,6 @@ const {handleStart,handlePauseResume,time} = useStopWatch(0)
   const [callEndeBtnM, setCallEndeBtnM ] = useState(100)
 
   useEffect(() => {
-    console.log();
     if(props.props){
       room = 'room' + props.props.operator;
       socketRef.current.emit('user:connect', username.current)
@@ -187,6 +186,7 @@ const {handleStart,handlePauseResume,time} = useStopWatch(0)
     if (online_room[rand]) {
       let id = online_room[rand]
       setOperatorId(id.operator)
+      console.log(online_room);
       setBusy__room(false);
     }
   },[online_room])
@@ -216,7 +216,7 @@ const {handleStart,handlePauseResume,time} = useStopWatch(0)
     }
   }
   function stopRecording() {
-    handlePauseResume();
+    handlePauseResume(username.current , call.from);
     setRecording(false)
     socketRef.current.emit('screenData:end', username.current)
     mediaRecorder = null
