@@ -1,21 +1,16 @@
 import React, { useState, useEffect, useRef } from "react";
 import ringtony from "../audeo/skayp-call.mp3"
 import toot from "../audeo/toot.mp3"
-// import { Image } from "../img/kisspng-avatar-user-medicine-surgery.jpg";
-// import StopWatch from "../components/StopWatch";
-// import { HangUp } from "../img/Call_Ende.jpg";
 import styles from "../css/CallPage.module.css";
 import {toast, ToastContainer} from 'react-toastify'
 import Peer from 'simple-peer';
 import openSocket from 'socket.io-client';
 import 'react-toastify/dist/ReactToastify.css'
-
 import useStopWatch  from "../hooks/StopWatch.hook";
 import Timer from "../components/Timer";
 import { useRandomString } from "../hooks/random.string.hook";
-// import ControlButtons from "../components/ControlButtons";
-// const socket = openSocket.connect('https://kosg.su', { reconnection: false })
-const socket = openSocket.connect('http://localhost:5000', { reconnection: false })
+const socket = openSocket.connect('https://kosg.su', { reconnection: false })
+// const socket = openSocket.connect('http://localhost:5000', { reconnection: false })
 export const CallPage = (props) => {
 const {handleStart,handlePauseResume,time} = useStopWatch(0);
   
