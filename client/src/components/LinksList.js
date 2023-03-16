@@ -1,5 +1,4 @@
 import React from 'react'
-import {Link} from 'react-router-dom'
 
 export const LinksList = ({ links }) => {
   if (!links.length) {
@@ -7,30 +6,32 @@ export const LinksList = ({ links }) => {
   }
 
   return (
-    <table class="table table-bordered table-striped">
-    <thead>
-    <tr>
-        <th>Date</th>
-        <th>From</th>
-        <th>video</th>
-        <th>Duration</th>
-    </tr>
-    </thead>
-    <tbody id="myTable">
-      { links.map((element, index) => {
+    <>
+      {links.map((element, index) => {
         return (
-          <tr key={element._id}>
-            <td>{new Date(`${element.date}`).toLocaleDateString()}</td>
-            <td>{element.callFrom}</td>
-            <td>
-              {/* <a href={`http://localhost:5000/static/${element.videoName}.webm`}>Открыть</a> */}
-              <a href={`https://kosg.su/static/${element.videoName}.webm`}>Открыть</a>
-            </td>
-            <td>{element.duration}</td>
-          </tr>
+          <div key={index} className="bg-light row mb-3" style={{ "maxWidth": "35rm" }}>
+            <div className='col-6'>
+              <ul className="list-group">
+                <div>Дата</div>
+                <li className="list-group-item text-sm">{new Date(`${element.date}`).toLocaleDateString()}</li>
+                <div>Звонок от</div>
+                <li className="list-group-item text-sm" style={{ "overflowY": "auto" }}>{element.callFrom}</li>
+              </ul>
+            </div>
+            <div className='col-6'>
+              <div className="d-flex flex-column align-content-end">
+                <ul className="list-group w-100">
+                  <div>Длительность</div>
+                  <li className="list-group-item">{element.duration}</li>
+                </ul>
+                <a className="btn btn-link text-sm mt-4" href={`http://localhost:5000/static/${element.videoName}.webm`}>Посмотреть видео</a>
+                {/* <a className="btn btn-primary text-sm mt-4" href={`https://kosg.su/static/${element.videoName}.webm`}>Посмотреть видео</a> */}
+
+              </div>
+            </div>
+          </div>
         )
-      }) }
-      </tbody>
-</table>
+      })}
+    </>
   )
 }

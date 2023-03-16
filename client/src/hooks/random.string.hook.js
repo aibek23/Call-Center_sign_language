@@ -1,4 +1,3 @@
-import React from "react";
 export function useRandomString(length) {
     var mask = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'; 
     var result = '';

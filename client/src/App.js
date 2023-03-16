@@ -2,9 +2,7 @@ import React from 'react'
 import {BrowserRouter as Router} from 'react-router-dom'
 import {useRoutes} from './routes'
 import {useAuth} from './hooks/auth.hook'
-import {useOnlineRoom} from './hooks/OnlineRoom.hook'
 import {Context} from './context/Context'
-import { ContextProvider } from './context/Context';
 import {Loader} from './components/Loader'
 import 'bootstrap/dist/css/bootstrap.min.css' ;
 import "./index.css";

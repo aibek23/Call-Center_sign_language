@@ -18,36 +18,21 @@ const { join, dirname } = require('path');
 const { fileURLToPath } = require('url');
 const { hostname } = require('node:os');
 
-
 ffmpeg.setFfmpegPath(path)
 const saveData = async (data, username) => {
-	const videoPath = __dirname + '/video'
+	const videoPath = path.join(__dirname, 'video');
+	const dirPath = `${videoPath}`;
+	const fileName = `${username}.webm`;
+	const tempFilePath = `${dirPath}/${fileName}`;
+	const finalFilePath = `${dirPath}/${fileName}`;
 
-	// const dirName = new Date().toLocaleDateString().replace(/\./g, '')
-	const dirPath = `${videoPath}`
-	const fileName = `${username}.webm`
-	const tempFilePath = `${dirPath}/${fileName}`
-	const finalFilePath = `${dirPath}/${fileName}`
-
-	let fileHandle
-	try {
-		fileHandle = await open(dirPath)
-	} catch {
-		await mkdir(dirPath, {
-			recursive: true,
-		})
-	} finally {
-		if (fileHandle) {
-			fileHandle.close()
-		}
-	}
-
+	await mkdir(dirPath, { recursive: true });
 	try {
 		const videoBlob = new Blob(data, {
 			type: 'video/webm'
-		})
-		const videoBuffer = Buffer.from(await videoBlob.arrayBuffer())
-		await writeFile(tempFilePath, videoBuffer)
+		});
+		const videoBuffer = Buffer.from(await videoBlob.arrayBuffer());
+		await writeFile(tempFilePath, videoBuffer);
 		ffmpeg(tempFilePath)
 			.outputOptions([
 				'-c:v libvpx-vp9',
@@ -56,20 +41,20 @@ const saveData = async (data, username) => {
 				'-b:v 0',
 				'-vf scale=1280:720',
 			])
-
 			.on('end', async () => {
-				await unlink(tempFilePath)
+				await unlink(tempFilePath);
 			})
-			.save(finalFilePath, dirPath)
+			.save(finalFilePath, dirPath);
 	} catch (e) {
+		// console.error(e);
 	}
-}
-
+};
 
 app.use(express.json({ extended: true }))
 app.use('/api/auth', require('./routes/auth.routes'))
 app.use('/api/time', require('./routes/time.routes'))
 app.use('/api/video', require('./routes/video.sream.routes'))
+// app.use('/api/videoSearch', require('./routes/video.search.routes.js'))
 app.use('/static', express.static(path.join(__dirname, 'video')))
 if(process.env.NODE_ENV === 'production'){
 	app.use('/',express.static(path.join(__dirname,'client','build')))
@@ -89,10 +74,8 @@ app.get('/', (req, res) => {
 	res.send('Running');
 });
 var operators = [];
-var recording = [];
 const dataChunks = {};
 const socketByUser = {};
-
 io.on("connection", (socket) => {
 	socket.on('user:connected', (username) => {
 		if (!socketByUser[socket.id]) {
@@ -110,33 +93,13 @@ io.on("connection", (socket) => {
 	}
 	);
 	socket.on('screenData:start', ({ data, username }) => {
-		// if(recording[0]){
-		// 	console.log("recor");
-		// 	operators.push({username});
-		// }else{
-
-		// }
-		// recording.forEach((e) => {
-		// 	if (e.username !== username) {
-		// 		console.log("recor");
-		// 		operators.push({username});
-		// 		io.sockets.emit('recording', (recording));
-		// 	}
-		// })
 		if (dataChunks[username]) {
 			dataChunks[username].push(data)
 		} else {
 			dataChunks[username] = [data]
 		}
 	})
-
 	socket.on('screenData:end', (username) => {
-		// recording.forEach((e,i) => {
-		// 	if (e.username == username) {
-		// 		operators.splice(i, 1);
-		// 		io.sockets.emit('recording', (recording));
-		// 	}
-		// })
 		if (dataChunks[username] && dataChunks[username].length) {
 			saveData(dataChunks[username], username)
 			dataChunks[username] = []
@@ -155,7 +118,6 @@ io.on("connection", (socket) => {
 		}
 	})
 	socket.on("disconnect", () => {
-		// socket.broadcast.emit("callEnded");
 		operators.forEach((e, i) => {
 			if (e.id == socket.id) {
 				operators.splice(i, 1);
@@ -202,5 +164,4 @@ async function start() {
 		process.exit(1)
 	}
 }
-
 start()

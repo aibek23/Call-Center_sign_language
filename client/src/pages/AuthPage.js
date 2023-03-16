@@ -60,6 +60,9 @@ export const AuthPage = () => {
     try {
       const data = await request('/api/auth/login', 'POST', {...formL})
       auth.login(data.token, data.userId , data.email, data.username, data.surname, checkbox)
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
     } catch (e) {}
   }
   const tabPane1 = () =>{

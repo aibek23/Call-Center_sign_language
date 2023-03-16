@@ -45,7 +45,7 @@ export  const useStopWatch = (initialState = 0) => {
       setIsPaused(!isPaused);
       try {
 
-        const data = await request('/api/time/save', 'POST', {duration: time, videoName: username , callFrom:call}, {
+         await request('/api/time/save', 'POST', {duration: time, videoName: username , callFrom:call}, {
           Authorization: `Bearer ${auth.token}`
         })
       } catch (e) {console.log(e)}

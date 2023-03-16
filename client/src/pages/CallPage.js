@@ -9,8 +9,8 @@ import 'react-toastify/dist/ReactToastify.css'
 import useStopWatch  from "../hooks/StopWatch.hook";
 import Timer from "../components/Timer";
 import { useRandomString } from "../hooks/random.string.hook";
-const socket = openSocket.connect('https://kosg.su', { reconnection: false })
-// const socket = openSocket.connect('http://localhost:5000', { reconnection: false })
+// const socket = openSocket.connect('https://kosg.su', { reconnection: false })
+const socket = openSocket.connect('http://localhost:5000', { reconnection: false })
 export const CallPage = (props) => {
 const {handleStart,handlePauseResume,time} = useStopWatch(0);
   
@@ -25,12 +25,14 @@ const {handleStart,handlePauseResume,time} = useStopWatch(0);
   const [online_room, setOnline_room] = useState([]);
   const [busy__room, setBusy__room] = useState(true);
   const [operatorId, setOperatorId] = useState();
+
   const myVideo = useRef();
   const userVideo = useRef();
   const connectionRef = useRef();
   const socketRef = useRef(socket);
-  const [screenStream, setScreenStream] = useState();
-  const [voiceStream, setVoiceStream] = useState();
+  
+  const [screenStream, setScreenStream] = useState(null);
+  const [voiceStream, setVoiceStream] = useState(null);
   const [recording, setRecording] = useState(false);
   // const [loading, setLoading] = useState(true);
   let mediaRecorder = null;
@@ -48,133 +50,47 @@ const {handleStart,handlePauseResume,time} = useStopWatch(0);
   const [callEndeBtnM, setCallEndeBtnM ] = useState(100)
 
   useEffect(() => {
-    if(props.props){
-      room = 'room' + props.props.operator;
-      socketRef.current.emit('user:connect', username.current)
-    if (navigator.mediaDevices === undefined) {
-      navigator.mediaDevices = {};
+    const getMediaDevices = async () => {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        setStream(stream);
+        myVideo.current.srcObject = stream;
+      } catch (err) {
+        console.log("An error occurred: " + err);
+      }
+    };
+    if (props.props) {
+      const room = 'room' + props.props.operator;
+      socketRef.current.emit('user:connect', username.current);
+      getMediaDevices();
+      navigator.mediaDevices.getDisplayMedia({ video: true })
+        .then((screenStream) => setScreenStream(screenStream))
+        .catch((err) => console.log("An error occurred while getting screen media: " + err));
+      navigator.mediaDevices.getUserMedia({ audio: true })
+        .then((voiceStream) => setVoiceStream(voiceStream))
+        .catch((err) => console.log("An error occurred while getting audio media: " + err));
+      socket.emit('createRoom', email, room, operatorId_mongo);
+      socket.on('callUser', ({ from, name: callerName, signal, surname }) => {
+        setCall({ isReceivingCall: true, from, name: callerName, signal, surname });
+      });
+    } else {
+      socket.emit('createRoom', email);
+      socket.on('busy__room', (data) => { setBusy__room(data); });
+      socket.on('online_room', (data) => { setOnline_room(data); });
+      getMediaDevices();
     }
-    if (navigator.mediaDevices.getUserMedia === undefined) {
-      navigator.mediaDevices.getUserMedia = function (constraints) {
-        var getUserMedia = (
-          navigator.getUserMedia ||
-          navigator.webkitGetUserMedia ||
-          navigator.mozGetUserMedia
-        );
-        if (!getUserMedia) {
-          return Promise.reject(new Error('getUserMedia is not implemented in this browser'));
-        }
-        return new Promise(function (resolve, reject) {
-          getUserMedia.call(navigator, constraints, resolve, reject);
-        });
-      };
-    }
-    navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-      .then((streams) => {
-        setStream(streams);
-        myVideo.current.srcObject = streams;
-      })
-      .catch(function (err) {
-        console.log("An error occurred: " + err);
-      });
-    navigator.mediaDevices.getDisplayMedia({ video: true })
-      .then((stream) => {
-        setScreenStream(stream);
-      })
-      .catch(function (err) {
-        console.log("An error occurred: " + err);
-      });
-    navigator.mediaDevices.getUserMedia({audio: true})
-      .then((stream) => {
-        setVoiceStream(stream)
-      })
-      .catch(function (err) {
-        console.log("An error occurred: " + err);
-      });
-    socket.emit('createRoom', email, room, operatorId_mongo)
-    socket.on('callUser', ({ from, name: callerName, signal, surname: surname }) => {
-      setCall({ isReceivingCall: true, from, name: callerName, signal , surname: surname});
+    socket.on('update', data => console.log(data));
+    socket.on('connect_error', err => {
+      console.log(err);
+      setTimeout(() => { window.location.reload(); }, 500);
     });
-    socket.on('update', data => console.log(data))
-    socket.on('connect_error', err => console.log(err))
-    // socket.on('disconnect', (err) => {
-    //   console.log(err)
-    //   stopRecording();
-    //   // setTimeout(() => {
-    //   //   window.location.reload();;
-    //   // }, 1500);
-    // })
-    socket.on('callEndeMessage',(data)=>{
-      stopRecording();
-           setTimeout(() => {
-        window.location.reload();
-      }, 1500);
-    })
-    socket.on('connect_failed', err => console.log(err))
-    socket.io.on("error", (err) => {
-      console.log(err instanceof Error); // true
-      toast.error(`перезагрузите браузер ошибка соединения №${err.message}`, {
-        position: "top-right",
-        autoClose: 2000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        });
-      console.log(err.data); // { content: "Please retry later" }
-    });
-  }else{
-    socket.emit('createRoom', email);
-    socket.on('busy__room', (data) => { setBusy__room(data);});
-    socket.on('update', data => console.log(data))
-    socket.on('connect_error', err => {console.log(err)
-    setTimeout(() => {
-      window.location.reload(); 
-    }, 3000);
-    })
-    socket.on('disconnect', () => { window.location.reload(); 
-    })
-    socket.on('connect_failed', err => console.log(err))
-    socket.on('callEndeMessage', () => {
-      window.location.reload();
-    })
+    socket.on('disconnect', () => { window.location.reload(); });
+    socket.on('callEndeMessage', () => { window.location.reload(); });
     socket.on('callUser', ({ from, name: callerName, signal }) => {
       setCall({ isReceivingCall: true, from, name: callerName, signal });
     });
-    socket.on('online_room', (data) => {
-      setOnline_room(data);
-    })
 
-    if (navigator.mediaDevices === undefined) {
-      navigator.mediaDevices = {};
-    }
-    if (navigator.mediaDevices.getUserMedia === undefined) {
-      navigator.mediaDevices.getUserMedia = function (constraints) {
-        var getUserMedia = (
-          navigator.getUserMedia ||
-          navigator.webkitGetUserMedia ||
-          navigator.mozGetUserMedia
-        );
-        if (!getUserMedia) {
-          return Promise.reject(new Error('getUserMedia is not implemented in this browser'));
-        }
-        return new Promise(function (resolve, reject) {
-          getUserMedia.call(navigator, constraints, resolve, reject);
-        });
-
-      };
-    }
-    navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-      .then((stream) => {
-        setStream(stream);
-        myVideo.current.srcObject = stream;
-      })
-      .catch(function (err) {
-        console.log("An error occurred: " + err);
-      });
-  }
-  }, [])
+  }, [props.props, email]);
 
   useEffect(() => {
     var rand = Math.floor(Math.random() * online_room.length);
@@ -184,44 +100,50 @@ const {handleStart,handlePauseResume,time} = useStopWatch(0);
       console.log(online_room);
       setBusy__room(false);
     }
-  },[online_room])
+  },[online_room]);
+
+  // let mediaRecorder;
+  // let dataChunks = [];
+
   function startRecording() {
     if (screenStream && voiceStream && !mediaRecorder) {
       setRecording(true);
       handleStart();
-      let mediaStream
+      let mediaStream;
       if (voiceStream === 'unavailable') {
-        mediaStream = screenStream
+        mediaStream = screenStream;
       } else {
         mediaStream = new MediaStream([
-          ...screenStream.getVideoTracks(),
-          ...voiceStream.getAudioTracks()
-        ])
+            ...screenStream.getVideoTracks(),
+            ...voiceStream.getAudioTracks()
+        ]);
       }
-      mediaRecorder = new MediaRecorder(mediaStream)
+      mediaRecorder = new MediaRecorder(mediaStream);
       mediaRecorder.ondataavailable = ({ data }) => {
-        dataChunks.push(data)
+        dataChunks.push(data);
         socketRef.current.emit('screenData:start', {
           username: username.current,
           data
-        })
-      }
-      mediaRecorder.onstop = stopRecording
-      mediaRecorder.start(150)
+        });
+      };
+      mediaRecorder.onstop = stopRecording;
+      mediaRecorder.start(150);
     }
   }
+
   function stopRecording() {
-    handlePauseResume(username.current , call.from);
-    setRecording(false)
-    socketRef.current.emit('screenData:end', username.current)
-    mediaRecorder = null
-    dataChunks = []
+    handlePauseResume(username.current, call.from);
+    setRecording(false);
+    socketRef.current.emit('screenData:end', username.current);
+    mediaRecorder = null;
+    dataChunks = [];
   }
   const answerCall = () => {
+
     startRecording();
-    setCallAccepted(true);
     Audeo_Call.loop = false;
     Audeo_Call.pause();
+    setCallAccepted(true);
     const peer = new Peer({ initiator: false,  trickle: false, stream: stream });
     peer.on('signal', (data) => {
       socket.emit('answerCall', { signal: data, to: call.from ,room:'room' + props.props.operator});
@@ -246,7 +168,7 @@ const {handleStart,handlePauseResume,time} = useStopWatch(0);
         connectionRef.current.destroy();
         setTimeout(() => {
           window.location.reload();
-        }, 1500);
+        }, 500);
       }
       })
     peer.signal(call.signal);
@@ -291,7 +213,7 @@ const {handleStart,handlePauseResume,time} = useStopWatch(0);
       });
     setTimeout(() => {
       window.location.reload();
-    }, 3500);
+    }, 500);
    }
     return false;
   }
@@ -303,19 +225,27 @@ const {handleStart,handlePauseResume,time} = useStopWatch(0);
     connectionRef.current.destroy();
     setTimeout(() => {
       window.location.reload();
-    }, 1500);
+    }, 500);
   };
+
   useEffect(() => {
-    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })
-    if(call.isReceivingCall){
+    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    if (call.isReceivingCall&&!callAccepted) {
       Audeo_Call.loop = true;
       Audeo_Call.play();
-  }else{
-    Audeo_Call.loop = false;
+    } else {
+      Audeo_Call.loop = false;
       Audeo_Call.pause();
-  }
-  },[call])
-
+    }
+    // Clean up the effect
+    return () => {
+      Audeo_Call.loop = false;
+      setTimeout(() => {
+        Audeo_Call.pause();
+      }, 500);
+   
+    };
+  }, [call,callAccepted]);
   //style
 
   useEffect(()=>{
@@ -364,7 +294,7 @@ const {handleStart,handlePauseResume,time} = useStopWatch(0);
         <div className={styles.modal_container + " " + `${modal&&styles.is_open}`}>
         <div className={styles.modal_content} >
               <div className={styles.video_operator + " " +styles.video + " " + `${tabPanes.screen2 && styles.video_player_little}`} onClick={() => { tabPane1() }}>
-                <video playsInline ref={myVideo} muted autoPlay className={styles.video_player_user+" "+styles.video_player} />
+                <video  ref={myVideo} muted autoPlay className={styles.video_player_user+" "+styles.video_player} />
               </div>
               {callAccepted && !callEnded && (
                   <div className={styles.video + " " + `${tabPanes.screen1 && styles.video_player_little}`} onClick={() => { tabPane1() }}>
