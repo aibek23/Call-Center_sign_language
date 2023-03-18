@@ -25,7 +25,15 @@ export const VideoPage = () => {
       setVideoPath(fetched);
       console.log(fetched);
     } catch (e) {
-      console.log(e);
+      toast.error(`${e}`, {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        });
     }
   }, [token, request, operatorRoomId]);
 

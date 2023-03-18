@@ -85,7 +85,7 @@ const {handleStart,handlePauseResume,time} = useStopWatch(0);
       setTimeout(() => { window.location.reload(); }, 500);
     });
     socket.on('disconnect', () => { window.location.reload(); });
-    socket.on('callEndeMessage', () => { window.location.reload(); });
+    socket.on('callEndeMessage', (e) => { window.location.reload(); console.log(e);});
     socket.on('callUser', ({ from, name: callerName, signal }) => {
       setCall({ isReceivingCall: true, from, name: callerName, signal });
     });
@@ -274,7 +274,22 @@ const {handleStart,handlePauseResume,time} = useStopWatch(0);
   const callBtnFunc = () => {
     setCallEndeBtnM(8)
     }
-
+    useEffect(() => {
+      if (userVideo.current !== undefined && !userVideo.current.paused ) {
+        // Video is already playing or has finished loading
+        let playPromise = userVideo.current.play();
+      if (playPromise !== undefined) {
+        playPromise.then(e => {
+          e.pause();
+        })
+        .catch(error => {
+          console.log(error);
+        });
+      }
+      }
+      
+      
+    }, [callAccepted]);
   return (
     <div className="container" onClick={()=>callBtnFunc()}>
             <ToastContainer
@@ -294,11 +309,11 @@ const {handleStart,handlePauseResume,time} = useStopWatch(0);
         <div className={styles.modal_container + " " + `${modal&&styles.is_open}`}>
         <div className={styles.modal_content} >
               <div className={styles.video_operator + " " +styles.video + " " + `${tabPanes.screen2 && styles.video_player_little}`} onClick={() => { tabPane1() }}>
-                <video  ref={myVideo} muted autoPlay className={styles.video_player_user+" "+styles.video_player} />
+                <video  ref={myVideo} muted  className={styles.video_player_user+" "+styles.video_player} />
               </div>
               {callAccepted && !callEnded && (
                   <div className={styles.video + " " + `${tabPanes.screen1 && styles.video_player_little}`} onClick={() => { tabPane1() }}>
-                  <video  ref={userVideo} autoPlay className={styles.video_player_operator + ' ' + styles.video_player}></video>
+                  <video  ref={userVideo}  className={styles.video_player_operator + ' ' + styles.video_player}></video>
                     <h6 className={styles.user_name}>{call.name} {call.surname} </h6>
                   <h6 className={styles.user_name}>{call.email} </h6>
                 </div> 
