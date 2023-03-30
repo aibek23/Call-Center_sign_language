@@ -1,4 +1,4 @@
-./pages/AdminPanel.js
+./hooks/OnlineRoom.hook.js
 const socket = openSocket.connect('http://localhost:5000', { reconnection: false })
 const socket = openSocket.connect('https://kosg.su', { reconnection: false })
 

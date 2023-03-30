@@ -9,8 +9,8 @@ import 'react-toastify/dist/ReactToastify.css'
 import useStopWatch  from "../hooks/StopWatch.hook";
 import Timer from "../components/Timer";
 import { useRandomString } from "../hooks/random.string.hook";
-// const socket = openSocket.connect('https://kosg.su', { reconnection: false })
-const socket = openSocket.connect('http://localhost:5000', { reconnection: false })
+const socket = openSocket.connect('https://kosg.su', { reconnection: false })
+// const socket = openSocket.connect('http://localhost:5000', { reconnection: false })
 export const CallPage = (props) => {
 const {handleStart,handlePauseResume,time} = useStopWatch(0);
   
@@ -256,7 +256,6 @@ const {handleStart,handlePauseResume,time} = useStopWatch(0);
   var openModal = function() {
     if(576>=window.innerWidth){
       setModal(true)
-      console.log(modal);
     }
   }
   const tabPane1 = () => {
@@ -275,21 +274,13 @@ const {handleStart,handlePauseResume,time} = useStopWatch(0);
     setCallEndeBtnM(8)
     }
     useEffect(() => {
-      if (userVideo.current !== undefined && !userVideo.current.paused ) {
-        // Video is already playing or has finished loading
-        let playPromise = userVideo.current.play();
-      if (playPromise !== undefined) {
-        playPromise.then(e => {
-          e.pause();
-        })
-        .catch(error => {
-          console.log(error);
-        });
+      if (myVideo.current !== undefined) {
+        myVideo.current.play()
       }
+      if (userVideo.current !== undefined) {
+        userVideo.current.play()
       }
-      
-      
-    }, [callAccepted]);
+    }, [modal]);
   return (
     <div className="container" onClick={()=>callBtnFunc()}>
             <ToastContainer
@@ -309,11 +300,11 @@ const {handleStart,handlePauseResume,time} = useStopWatch(0);
         <div className={styles.modal_container + " " + `${modal&&styles.is_open}`}>
         <div className={styles.modal_content} >
               <div className={styles.video_operator + " " +styles.video + " " + `${tabPanes.screen2 && styles.video_player_little}`} onClick={() => { tabPane1() }}>
-                <video  ref={myVideo} muted  className={styles.video_player_user+" "+styles.video_player} />
+                <video  ref={myVideo} muted autoPlay  className={styles.video_player_user+" "+styles.video_player} />
               </div>
               {callAccepted && !callEnded && (
                   <div className={styles.video + " " + `${tabPanes.screen1 && styles.video_player_little}`} onClick={() => { tabPane1() }}>
-                  <video  ref={userVideo}  className={styles.video_player_operator + ' ' + styles.video_player}></video>
+                  <video  ref={userVideo} autoPlay className={styles.video_player_operator + ' ' + styles.video_player}></video>
                     <h6 className={styles.user_name}>{call.name} {call.surname} </h6>
                   <h6 className={styles.user_name}>{call.email} </h6>
                 </div> 
