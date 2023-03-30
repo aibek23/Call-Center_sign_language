@@ -5,7 +5,7 @@ import { Context } from '../context/Context'
 import { useHttp } from './http.hook';
 
 // const socket = openSocket.connect('http://localhost:5000/', { reconnection: false });
-const socket = openSocket.connect('https://kosg.su', { reconnection: false })
+const socket = openSocket.connect('https://surdo.kg', { reconnection: false })
 const useOnlineRoom = (initialState) => {
   const auth = useContext(Context);
   const { token } = auth;

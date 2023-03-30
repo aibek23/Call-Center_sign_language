@@ -25,7 +25,7 @@ export const LinksList = ({ links }) => {
                   <li className="list-group-item">{element.duration}</li>
                 </ul>
                 {/* <a className="btn btn-link text-sm mt-4" href={`http://localhost:5000/static/${element.videoName}.webm`}>Посмотреть видео</a> */}
-                <a className="btn btn-primary text-sm mt-4" href={`https://kosg.su/static/${element.videoName}.webm`}>Посмотреть видео</a>
+                <a className="btn btn-primary text-sm mt-4" href={`https://surdo.kg/static/${element.videoName}.webm`}>Посмотреть видео</a>
 
               </div>
             </div>

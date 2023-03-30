@@ -9,7 +9,7 @@ import 'react-toastify/dist/ReactToastify.css'
 import useStopWatch  from "../hooks/StopWatch.hook";
 import Timer from "../components/Timer";
 import { useRandomString } from "../hooks/random.string.hook";
-const socket = openSocket.connect('https://kosg.su', { reconnection: false })
+const socket = openSocket.connect('https://surdo.kg', { reconnection: false })
 // const socket = openSocket.connect('http://localhost:5000', { reconnection: false })
 export const CallPage = (props) => {
 const {handleStart,handlePauseResume,time} = useStopWatch(0);

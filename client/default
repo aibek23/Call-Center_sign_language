@@ -41,7 +41,7 @@ server {
 	# Add index.php to the list if you are using PHP
 	index index.html index.htm index.nginx-debian.html;
 
-	server_name kosg.su www.kosg.su;
+	server_name surdo.kg www.surdo.kg;
 
 	location / {
 		   proxy_pass http://localhost:3000; # Порт на котором запускается node.js приложение
@@ -78,8 +78,8 @@ server {
 
     listen [::]:443 ssl ipv6only=on; # managed by Certbot
     listen 443 ssl; # managed by Certbot
-    ssl_certificate /etc/letsencrypt/live/kosg.su/fullchain.pem; # managed by Certbot
-    ssl_certificate_key /etc/letsencrypt/live/kosg.su/privkey.pem; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/surdo.kg/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/surdo.kg/privkey.pem; # managed by Certbot
     include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
     ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
 
@@ -107,12 +107,12 @@ server {
 #}
 
 server {
-    if ($host = www.kosg.su) {
+    if ($host = www.surdo.kg) {
         return 301 https://$host$request_uri;
     } # managed by Certbot
 
 
-    if ($host = kosg.su) {
+    if ($host = surdo.kg) {
         return 301 https://$host$request_uri;
     } # managed by Certbot
 
@@ -120,7 +120,7 @@ server {
 	listen 80 default_server;
 	listen [::]:80 default_server;
 
-	server_name kosg.su www.kosg.su;
+	server_name surdo.kg www.surdo.kg;
     return 404; # managed by Certbot
 
 
