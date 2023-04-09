@@ -37,7 +37,7 @@ export const AdminPanel = () => {
           className="col-xl-8 mt-3 adminLink"
         >
           <div className="row mt-3 p-3 d-flex flex-row list-group-item-primary align-self-center shadow-lg rounded-3 align-items-center">
-            <h5 className="col-4 m-0">Operator1</h5>
+            <h5 className="col-4 m-0">Operator2</h5>
             <span className="col-2 text-center text-success rounded-3">{isActive2}</span>
             <p className="col-6 m-0 text-center">
               <span className="text-warning m-0 text-dark">

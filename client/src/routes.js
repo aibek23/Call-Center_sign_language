@@ -6,6 +6,7 @@ import {AuthPage} from './pages/AuthPage'
 import { Header } from './components/Header'
 import {AdminPanel} from './pages/AdminPanel'
 import { VideoPage } from './pages/VideoPage'
+import PrivacyPolicy from './pages/PrivacyPolicy'
 // const AdminPanel = lazy(() => import('./pages/AdminPanel'));
 
 export const useRoutes = (isAuthenticated) => {
@@ -56,6 +57,9 @@ export const useRoutes = (isAuthenticated) => {
             <Route path="/AdminPanel" exact>
               <AdminPanel />
             </Route>
+            <Route path="/PrivacyPolicy" exact>
+                <PrivacyPolicy />
+             </Route>
           <Route path="/detailVideo/:id">
             <VideoPage />
           </Route>
@@ -78,6 +82,10 @@ export const useRoutes = (isAuthenticated) => {
         <Route path="/AuthPage" exact>
           <AuthPage />
         </Route>
+        <Route path="/PrivacyPolicy" exact>
+          <PrivacyPolicy />
+        </Route>
+        
         <Redirect to="/HomePage" />
       </Switch>
     </>
